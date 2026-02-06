@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { COSTUMES } from '../constants';
 
-const apiKey = process.env.API_KEY || '';
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export const getCostumeRecommendation = async (userQuery: string, currentCartContext: string): Promise<string> => {
@@ -9,10 +9,10 @@ export const getCostumeRecommendation = async (userQuery: string, currentCartCon
     return "Maaf, fitur asisten AI sedang tidak tersedia saat ini (API Key missing).";
   }
 
-  const catalogContext = JSON.stringify(COSTUMES.map(c => ({ 
-    id: c.id, 
-    name: c.name, 
-    category: c.category, 
+  const catalogContext = JSON.stringify(COSTUMES.map(c => ({
+    id: c.id,
+    name: c.name,
+    category: c.category,
     price: c.price,
     tags: c.tags
   })));
@@ -41,7 +41,7 @@ export const getCostumeRecommendation = async (userQuery: string, currentCartCon
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: userQuery,
       config: {
         systemInstruction: systemPrompt,
