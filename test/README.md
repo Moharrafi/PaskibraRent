@@ -16,7 +16,7 @@ Implementasi logika visual untuk item yang stoknya habis (`availableStock: 0`).
     *   Tombol "Sewa" berubah menjadi ikon gembok (Disabled).
 *   **Detail Produk:**
     *   Penambahan **Banner Informasi** berwarna kuning (*amber*) yang menjelaskan estimasi ketersediaan barang (2-3 hari).
-    *   Tombol aksi utama berubah menjadi **"Kabari Saat Ready"** (Link ke WhatsApp).
+    *   Tombol aksi utama berubah menjadi **"Kabar  i Saat Ready"** (Link ke WhatsApp).
 
 ### 3. Data Simulasi
 *   Mengubah stok item id '3' menjadi 0 untuk keperluan demonstrasi fitur status sewa.

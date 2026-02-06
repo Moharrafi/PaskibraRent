@@ -35,7 +35,7 @@ export const COSTUMES: Costume[] = [
     image: '/images/tt.jpeg',
     description: 'Seragam SHERIF berwarna hitam pekat dengan ornamen emas mewah. Pilihan utama untuk variasi formasi yang memberikan kesan kuat dan disiplin.',
     tags: ['sherif', 'hitam', 'emas', 'fullset'],
-    availableStock: 16,
+    availableStock: 0,
     material: 'High Twist Premium & Songket',
     sizes: ['S', 'M', 'L', 'XL'],
     includedItems: ['Atasan & Bawahan Hitam Emas', 'Aksesoris Kepala', 'Selempang Emas'],

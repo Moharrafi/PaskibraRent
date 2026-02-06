@@ -1,14 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Youtube, Minus, Plus, ShoppingBag, X, Search, Calendar, Ruler, Info, RotateCcw, ChevronRight, ArrowUp, Menu, CheckCircle, ShieldCheck, Clock, Users, Play, MessageCircle, ChevronDown, CreditCard } from 'lucide-react';
+import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Youtube, Minus, Plus, ShoppingBag, X, Search, Calendar, Ruler, Info, RotateCcw, ChevronRight, ArrowUp, Menu, CheckCircle, ShieldCheck, Clock, Users, Play, MessageCircle, ChevronDown, CreditCard, User as UserIcon, LogOut, LogIn, AlertCircle, History, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COSTUMES, APP_NAME, CONTACT_WA } from './constants';
-import { CartItem, Costume, ViewState, BookingDetails } from './types';
+import { CartItem, Costume, ViewState, BookingDetails, User } from './types';
 import CostumeCard from './components/CostumeCard';
 import CartDrawer from './components/CartDrawer';
 import CostumeDetailModal from './components/CostumeDetailModal';
-
+import AIChat from './components/AIChat';
 import GalleryPage from './components/GalleryPage';
 import SizeGuideModal from './components/SizeGuideModal';
+import LoginModal from './components/LoginModal';
+import { UserProfileModal, RentalHistoryModal, ChangePasswordModal } from './components/UserMenuModals';
 
 // --- Animation Components ---
 const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; className?: string }> = ({ children, delay = 0, className = "" }) => (
@@ -36,6 +38,60 @@ const App: React.FC = () => {
   const [selectedCostume, setSelectedCostume] = useState<Costume | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // User Modal States
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [activeUserModal, setActiveUserModal] = useState<'PROFILE' | 'HISTORY' | 'PASSWORD' | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  // Authentication Logic
+  const handleLogin = (name: string, email: string) => {
+    setUser({ name, email });
+    setIsLoginModalOpen(false);
+  };
+
+  const handleUpdateProfile = (name: string, email: string) => {
+    setUser(prev => prev ? ({ ...prev, name, email }) : null);
+  };
+
+  const requestLogout = () => {
+    setIsUserDropdownOpen(false);
+    setIsLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = () => {
+    setUser(null);
+    setCart([]);
+    setView('HOME');
+    setIsLogoutConfirmOpen(false);
+    setIsMobileMenuOpen(false);
+    setActiveUserModal(null);
+  };
+
+  const openUserModal = (modalType: 'PROFILE' | 'HISTORY' | 'PASSWORD') => {
+    setActiveUserModal(modalType);
+    setIsUserDropdownOpen(false);
+    setIsMobileMenuOpen(false);
+  }
+
+  const handleRentAgainFromHistory = (items: CartItem[]) => {
+    setCart(prev => {
+      const newCart = [...prev];
+      items.forEach(newItem => {
+        const existingItemIndex = newCart.findIndex(c => c.id === newItem.id);
+        if (existingItemIndex > -1) {
+          newCart[existingItemIndex].quantity = newItem.quantity;
+        } else {
+          newCart.push(newItem);
+        }
+      });
+      return newCart;
+    });
+    setActiveUserModal(null);
+    setIsCartOpen(true);
+  };
+
   React.useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
@@ -50,6 +106,12 @@ const App: React.FC = () => {
 
   // Cart Logic
   const addToCart = (costume: Costume) => {
+    // Auth Check
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     setCart(prev => {
       if (prev.find(item => item.id === costume.id)) return prev;
       return [...prev, { ...costume, quantity: 1, rentalDays: 3 }];
@@ -168,6 +230,87 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* User Login/Profile Section with Dropdown */}
+            {user ? (
+              <div className="hidden md:flex items-center gap-4 pl-4 border-l border-slate-700 ml-4 relative">
+                <button
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center gap-3 group focus:outline-none"
+                >
+                  <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-200 border border-slate-700 ring-2 ring-transparent group-hover:ring-slate-600 transition-all">
+                    <UserIcon size={18} />
+                  </div>
+                  <div className="text-left hidden lg:block">
+                    <p className="text-white text-sm font-bold leading-none max-w-[100px] truncate">{user.name}</p>
+                    <p className="text-slate-400 text-[10px] font-medium leading-none mt-1">Member</p>
+                  </div>
+                  <ChevronDown size={16} className={`text-slate-400 transition-transform duration-300 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isUserDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full right-0 mt-3 w-60 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden z-50 origin-top-right"
+                    >
+                      <div className="p-2">
+                        <div className="px-3 py-3 border-b border-slate-50 mb-1">
+                          <p className="text-sm font-bold text-slate-900 truncate">{user.name}</p>
+                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                        </div>
+
+                        <button
+                          onClick={() => openUserModal('PROFILE')}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-red-600 rounded-lg transition-colors group"
+                        >
+                          <UserIcon size={16} className="text-slate-400 group-hover:text-red-600" /> Profil Pengguna
+                        </button>
+                        <button
+                          onClick={() => openUserModal('HISTORY')}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-red-600 rounded-lg transition-colors group"
+                        >
+                          <History size={16} className="text-slate-400 group-hover:text-red-600" /> Riwayat Penyewaan
+                        </button>
+                        <button
+                          onClick={() => openUserModal('PASSWORD')}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-red-600 rounded-lg transition-colors group"
+                        >
+                          <Lock size={16} className="text-slate-400 group-hover:text-red-600" /> Ganti Password
+                        </button>
+
+                        <div className="h-px bg-slate-100 my-1" />
+
+                        <button
+                          onClick={requestLogout}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium group"
+                        >
+                          <LogOut size={16} className="group-hover:translate-x-1 transition-transform" /> Keluar
+                        </button>
+                      </div>
+
+                      {/* Overlay to close when clicking outside (transparent) */}
+                      <div
+                        className="fixed inset-0 z-[-1]"
+                        onClick={() => setIsUserDropdownOpen(false)}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 rounded-full transition-colors border border-white/20 hover:border-white/50"
+              >
+                <LogIn size={16} />
+                <span>Masuk</span>
+              </button>
+            )}
+
             <button
               onClick={() => setIsCartOpen(true)}
               className={`relative p-3 rounded-full transition-all duration-300 group ${isCartAnimating ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
@@ -194,6 +337,37 @@ const App: React.FC = () => {
               className="md:hidden bg-slate-900 border-t border-slate-800 overflow-hidden shadow-xl"
             >
               <div className="p-4 space-y-2">
+                {user ? (
+                  <div className="flex flex-col gap-2 p-4 bg-slate-800/50 rounded-xl mb-2">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white">
+                        <UserIcon size={20} />
+                      </div>
+                      <div>
+                        <p className="text-white font-bold text-sm">{user.name}</p>
+                        <p className="text-slate-400 text-xs">{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="h-px bg-slate-700 my-1" />
+                    <button onClick={() => openUserModal('PROFILE')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2">
+                      <UserIcon size={14} /> Profil Pengguna
+                    </button>
+                    <button onClick={() => openUserModal('HISTORY')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2">
+                      <History size={14} /> Riwayat Penyewaan
+                    </button>
+                    <button onClick={() => openUserModal('PASSWORD')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2">
+                      <Lock size={14} /> Ganti Password
+                    </button>
+                    <button onClick={requestLogout} className="text-left text-red-400 text-sm py-2 hover:text-red-300 flex items-center gap-2 font-medium">
+                      <LogOut size={14} /> Keluar Akun
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => { setIsLoginModalOpen(true); setIsMobileMenuOpen(false); }} className="w-full text-left font-medium text-white p-4 bg-red-600 rounded-xl mb-2 flex items-center gap-2 justify-center">
+                    <LogIn size={18} /> Masuk Akun
+                  </button>
+                )}
+
                 <button onClick={() => { setView('HOME'); setIsMobileMenuOpen(false); }} className="block w-full text-left font-medium text-slate-300 p-4 hover:bg-slate-800 rounded-xl transition-colors">Beranda</button>
                 <button onClick={() => { setView('CATALOG'); setIsMobileMenuOpen(false); }} className="block w-full text-left font-medium text-slate-300 p-4 hover:bg-slate-800 rounded-xl transition-colors">Katalog Kostum</button>
                 <button onClick={() => { setView('GALLERY'); setIsMobileMenuOpen(false); }} className="block w-full text-left font-medium text-slate-300 p-4 hover:bg-slate-800 rounded-xl transition-colors">Galeri Kegiatan</button>
@@ -928,6 +1102,73 @@ const App: React.FC = () => {
         isOpen={isSizeGuideOpen}
         onClose={() => setIsSizeGuideOpen(false)}
       />
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLogin={handleLogin}
+      />
+
+      {/* User Menu Modals */}
+      {/* User Menu Modals */}
+      {user && (
+        <>
+          <UserProfileModal
+            isOpen={activeUserModal === 'PROFILE'}
+            onClose={() => setActiveUserModal(null)}
+            user={user}
+            onUpdate={handleUpdateProfile}
+          />
+
+          <RentalHistoryModal
+            isOpen={activeUserModal === 'HISTORY'}
+            onClose={() => setActiveUserModal(null)}
+            user={user}
+            onRentAgain={handleRentAgainFromHistory}
+          />
+        </>
+      )}
+
+      <ChangePasswordModal
+        isOpen={activeUserModal === 'PASSWORD'}
+        onClose={() => setActiveUserModal(null)}
+      />
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {isLogoutConfirmOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsLogoutConfirmOpen(false)} />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 w-full max-w-sm relative z-10 shadow-2xl text-center"
+            >
+              <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <LogOut size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Konfirmasi Keluar</h3>
+              <p className="text-slate-500 mb-6">Apakah Anda yakin ingin keluar dari akun? Anda perlu masuk kembali untuk menyewa.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsLogoutConfirmOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={confirmLogout}
+                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
+                >
+                  Ya, Keluar
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
