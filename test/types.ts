@@ -29,6 +29,12 @@ export interface BookingDetails {
   items: CartItem[];
 }
 
+export interface User {
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
 export type ViewState = 'HOME' | 'CATALOG' | 'CART' | 'SUCCESS' | 'GALLERY';
 
 export interface ChatMessage {

@@ -42,7 +42,7 @@ const AIChat: React.FC<AIChatProps> = ({ cart }) => {
     setIsLoading(true);
 
     try {
-      const cartContext = cart.length > 0
+      const cartContext = cart.length > 0 
         ? `User memiliki ${cart.length} item di keranjang: ${cart.map(i => i.name).join(', ')}`
         : 'Keranjang user masih kosong.';
 
@@ -77,7 +77,7 @@ const AIChat: React.FC<AIChatProps> = ({ cart }) => {
           <div className="bg-red-700 p-4 text-white flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Bot className="w-5 h-5" />
-              <span className="font-semibold">Asisten KostumFadilyss</span>
+              <span className="font-semibold">Asisten PaskibraRent</span>
             </div>
             <button onClick={() => setIsOpen(false)} className="hover:bg-red-800 p-1 rounded">
               <X className="w-5 h-5" />
@@ -92,16 +92,18 @@ const AIChat: React.FC<AIChatProps> = ({ cart }) => {
                 className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-blue-600' : 'bg-red-600'
-                    } text-white`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                    msg.role === 'user' ? 'bg-blue-600' : 'bg-red-600'
+                  } text-white`}
                 >
                   {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
                 </div>
                 <div
-                  className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'user'
+                  className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                    msg.role === 'user'
                       ? 'bg-blue-600 text-white rounded-tr-none'
                       : 'bg-white text-slate-800 border border-slate-200 shadow-sm rounded-tl-none'
-                    }`}
+                  }`}
                 >
                   {msg.text}
                 </div>
@@ -109,12 +111,12 @@ const AIChat: React.FC<AIChatProps> = ({ cart }) => {
             ))}
             {isLoading && (
               <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shrink-0 text-white">
-                  <Bot size={14} />
-                </div>
-                <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm">
-                  <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
-                </div>
+                 <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shrink-0 text-white">
+                   <Bot size={14} />
+                 </div>
+                 <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm">
+                   <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -148,7 +150,7 @@ const AIChat: React.FC<AIChatProps> = ({ cart }) => {
       >
         <MessageCircle className="w-6 h-6" />
         <span className={`max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-medium ${!isOpen ? 'md:max-w-xs px-2' : ''}`}>
-          {isOpen ? 'Tutup Chat' : 'Konsultasi AI'}
+           {isOpen ? 'Tutup Chat' : 'Konsultasi AI'}
         </span>
       </button>
     </div>

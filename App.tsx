@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ShoppingBag, Menu, X, CheckCircle, Search, MapPin, Phone, Instagram, Facebook, MessageCircle, RotateCcw, Star, Shield, ShieldCheck, Calendar, Award, Truck, ArrowRight, ChevronDown, Ruler, Users, Sparkles, Quote, Scissors, Zap, Clock, Play, Check, Mail, Twitter, Youtube, CreditCard, ChevronRight } from 'lucide-react';
+import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Youtube, Minus, Plus, ShoppingBag, X, Search, Calendar, Ruler, Info, RotateCcw, ChevronRight, ArrowUp, Menu, CheckCircle, ShieldCheck, Clock, Users, Play, MessageCircle, ChevronDown, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COSTUMES, APP_NAME, CONTACT_WA } from './constants';
 import { CartItem, Costume, ViewState, BookingDetails } from './types';
@@ -34,6 +34,19 @@ const App: React.FC = () => {
   const [lastBooking, setLastBooking] = useState<BookingDetails | null>(null);
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [selectedCostume, setSelectedCostume] = useState<Costume | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Cart Logic
   const addToCart = (costume: Costume) => {
@@ -88,7 +101,7 @@ const App: React.FC = () => {
     });
   }, [searchQuery, filterCategory]);
 
-  const categories = ['all', 'fullset', 'pria', 'wanita', 'aksesoris'];
+  const categories = ['all', 'fullset', 'aksesoris'];
 
   const pageVariants = {
     initial: { opacity: 0 },
@@ -126,9 +139,12 @@ const App: React.FC = () => {
       >
         <div className="container mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setView('HOME')}>
-            <div className="relative w-10 h-10 bg-white rounded-xl flex items-center justify-center text-red-700 font-bold shadow-lg shadow-white/10 group-hover:shadow-white/20 transition-all duration-300 transform group-hover:rotate-3">
-              <span className="text-xl">P</span>
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="KostumFadilyss Logo"
+              className="w-10 h-10 rounded-xl object-contain transition-all duration-300 transform group-hover:rotate-3"
+            />
+
             <span className="text-xl font-bold tracking-tight text-white group-hover:text-slate-200 transition-colors">{APP_NAME}</span>
           </div>
 
@@ -198,10 +214,17 @@ const App: React.FC = () => {
               className="w-full"
             >
               {/* HERO SECTION: High-End Editorial Style */}
-              <section className="relative min-h-[92vh] flex items-center bg-slate-950 overflow-hidden">
-                {/* Background Decor - Spotlight Effect */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] bg-slate-800/20 blur-[100px] rounded-full pointer-events-none"></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
+              <section className="relative min-h-[92vh] flex items-center bg-slate-900 overflow-hidden">
+                {/* Background Image with Elegant Gradient Overlay */}
+                <div className="absolute inset-0">
+                  <img
+                    src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
+                    alt="Hero Background"
+                    className="w-full h-full object-cover object-center"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-slate-950/30 mix-blend-multiply"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                </div>
 
                 <div className="container mx-auto px-4 md:px-8 relative z-10 pt-10 pb-10">
                   <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -258,47 +281,7 @@ const App: React.FC = () => {
                       </div>
                     </motion.div>
 
-                    {/* Right Visuals (Layered Composition) */}
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 1, delay: 0.2 }}
-                      className="lg:w-1/2 relative h-[500px] md:h-[600px] w-full flex items-center justify-center lg:justify-end"
-                    >
-                      {/* Main Large Image */}
-                      <div className="absolute right-0 top-0 bottom-0 w-[85%] bg-slate-800 overflow-hidden shadow-2xl shadow-black/50 border border-slate-800 z-10 group rounded-[3rem]">
-                        <img
-                          src="/images/1.jpeg"
-                          alt="Paskibra Male"
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                        />
-                        {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
-                      </div>
 
-                      {/* Floating Detail Image (Left Overlap) */}
-                      <motion.div
-                        initial={{ y: 50, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5, duration: 0.8 }}
-                        className="absolute left-0 bottom-12 w-[45%] aspect-[3/4] bg-slate-900 border-4 border-slate-950 shadow-2xl z-20 overflow-hidden group rounded-[2.5rem]"
-                      >
-                        <img
-                          src="/images/WhatsApp Image 2026-02-05 at 21.17.00.jpeg"
-                          alt="Detail Attribute"
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                          <p className="text-white text-xs font-bold tracking-widest uppercase mb-1">Detail Atribut</p>
-                          <p className="text-slate-300 text-[10px]">Bordir Emas Premium</p>
-                        </div>
-                      </motion.div>
-
-
-
-                      {/* Decorative Circle */}
-                      <div className="absolute -z-10 -bottom-12 -right-12 w-64 h-64 border border-slate-800 rounded-full animate-spin-slow opacity-30 border-dashed"></div>
-                    </motion.div>
                   </div>
                 </div>
               </section>
@@ -306,13 +289,23 @@ const App: React.FC = () => {
               {/* REPLACED SECTION: Brand Values Marquee (Sleek Ticker) */}
               <section className="bg-slate-900 border-t border-slate-800 border-b border-slate-800 py-6 overflow-hidden relative">
                 <div className="flex w-full overflow-hidden">
-                  <div className="flex gap-16 animate-marquee min-w-full justify-center items-center">
-                    {[...BRAND_VALUES, ...BRAND_VALUES, ...BRAND_VALUES].map((val, i) => (
-                      <div key={i} className="flex items-center gap-3 shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300">
-                        <val.icon size={20} className="text-red-500" />
-                        <span className="text-sm md:text-base font-bold text-white tracking-[0.2em] uppercase">{val.text}</span>
-                      </div>
-                    ))}
+                  <div className="flex animate-marquee w-fit">
+                    <div className="flex gap-16 shrink-0 px-8 items-center">
+                      {[...BRAND_VALUES, ...BRAND_VALUES].map((val, i) => (
+                        <div key={i} className="flex items-center gap-3 shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300">
+                          <val.icon size={20} className="text-red-500" />
+                          <span className="text-sm md:text-base font-bold text-white tracking-[0.2em] uppercase">{val.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex gap-16 shrink-0 px-8 items-center">
+                      {[...BRAND_VALUES, ...BRAND_VALUES].map((val, i) => (
+                        <div key={`dup-${i}`} className="flex items-center gap-3 shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300">
+                          <val.icon size={20} className="text-red-500" />
+                          <span className="text-sm md:text-base font-bold text-white tracking-[0.2em] uppercase">{val.text}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </section>
@@ -329,9 +322,9 @@ const App: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                     {[
-                      { title: 'Satuan Putra', img: '/images/1.jpeg', cat: 'pria' },
-                      { title: 'Satuan Putri', img: '/images/qq.jpeg', cat: 'wanita' },
-                      { title: 'Atribut Lengkap', img: '/images/ee.jpeg', cat: 'aksesoris' }
+                      { title: 'KOPASKA', img: '/images/1.jpeg', cat: 'fullset' },
+                      { title: 'ARJUNA', img: '/images/qq.jpeg', cat: 'fullset' },
+                      { title: 'SHERIF', img: '/images/tt.jpeg', cat: 'fullset' }
                     ].map((item, idx) => (
                       <motion.div
                         key={idx}
@@ -387,7 +380,7 @@ const App: React.FC = () => {
                         { icon: RotateCcw, title: '4. Pengembalian', desc: 'Kembalikan kotor tidak masalah, kami yang laundry.' }
                       ].map((step, i) => (
                         <ScrollReveal key={i} delay={i * 0.1}>
-                          <div className="bg-white p-6 rounded-3xl border border-slate-100 hover:border-slate-200 hover:shadow-xl transition-all duration-300 group h-full">
+                          <div className="bg-white p-6 rounded-3xl border border-slate-200 hover:border-slate-200 hover:shadow-xl transition-all duration-300 group h-full">
                             <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300">
                               <step.icon size={22} strokeWidth={1.5} />
                             </div>
@@ -432,7 +425,7 @@ const App: React.FC = () => {
                     <ScrollReveal className="lg:w-1/2 relative" delay={0.2}>
                       <div className="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200 border border-slate-100">
                         <img
-                          src="/images/WhatsApp Image 2026-02-05 at 21.10.12.jpeg"
+                          src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
                           alt="Detail Seragam"
                           className="w-full h-[600px] object-cover"
                         />
@@ -454,25 +447,47 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="flex w-full overflow-hidden pb-4">
-                  <div className="flex gap-6 animate-marquee min-w-full pl-6">
-                    {[...TESTIMONIALS, ...TESTIMONIALS].map((review, i) => (
-                      <div key={i} className="w-80 md:w-96 p-6 rounded-3xl bg-white border border-slate-100 shrink-0 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group/card cursor-default relative">
-                        <Quote size={40} className="absolute top-4 right-4 text-slate-100 rotate-180" />
-                        <div className="flex gap-1 mb-4 text-yellow-400 relative z-10">
-                          {[1, 2, 3, 4, 5].map(star => <Star key={star} size={16} fill="currentColor" />)}
-                        </div>
-                        <p className="text-slate-600 text-base leading-relaxed mb-6 relative z-10">"{review.text}"</p>
-                        <div className="flex items-center gap-3 border-t border-slate-50 pt-4">
-                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-sm">
-                            {review.author.charAt(0)}
+                  <div className="flex animate-marquee w-fit">
+                    <div className="flex gap-6 shrink-0 px-3">
+                      {[...TESTIMONIALS, ...TESTIMONIALS].map((review, i) => (
+                        <div key={i} className="w-80 md:w-96 p-6 rounded-3xl bg-white border border-slate-100 shrink-0 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group/card cursor-default relative">
+                          <Quote size={40} className="absolute top-4 right-4 text-slate-100 rotate-180" />
+                          <div className="flex gap-1 mb-4 text-yellow-400 relative z-10">
+                            {[1, 2, 3, 4, 5].map(star => <Star key={star} size={16} fill="currentColor" />)}
                           </div>
-                          <div>
-                            <p className="font-bold text-slate-900 text-sm group-hover/card:text-red-700 transition-colors">{review.author}</p>
-                            <p className="text-xs text-slate-400 font-medium">{review.role}</p>
+                          <p className="text-slate-600 text-base leading-relaxed mb-6 relative z-10">"{review.text}"</p>
+                          <div className="flex items-center gap-3 border-t border-slate-50 pt-4">
+                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-sm">
+                              {review.author.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-900 text-sm group-hover/card:text-red-700 transition-colors">{review.author}</p>
+                              <p className="text-xs text-slate-400 font-medium">{review.role}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    <div className="flex gap-6 shrink-0 px-3">
+                      {[...TESTIMONIALS, ...TESTIMONIALS].map((review, i) => (
+                        <div key={`dup-${i}`} className="w-80 md:w-96 p-6 rounded-3xl bg-white border border-slate-100 shrink-0 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group/card cursor-default relative">
+                          <Quote size={40} className="absolute top-4 right-4 text-slate-100 rotate-180" />
+                          <div className="flex gap-1 mb-4 text-yellow-400 relative z-10">
+                            {[1, 2, 3, 4, 5].map(star => <Star key={star} size={16} fill="currentColor" />)}
+                          </div>
+                          <p className="text-slate-600 text-base leading-relaxed mb-6 relative z-10">"{review.text}"</p>
+                          <div className="flex items-center gap-3 border-t border-slate-50 pt-4">
+                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-sm">
+                              {review.author.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-900 text-sm group-hover/card:text-red-700 transition-colors">{review.author}</p>
+                              <p className="text-xs text-slate-400 font-medium">{review.role}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </section>
@@ -548,13 +563,13 @@ const App: React.FC = () => {
                             <span className="font-bold text-white">08.00 - 17.00</span>
                           </li>
                           <li className="flex justify-between border-b border-slate-800 pb-2">
-                            <span>Sabtu</span>
+                            <span>Sabtu - Minggu</span>
                             <span className="font-bold text-white">09.00 - 15.00</span>
                           </li>
-                          <li className="flex justify-between text-red-400">
+                          {/* <li className="flex justify-between text-red-400">
                             <span>Minggu & Libur</span>
                             <span className="font-bold">Tutup</span>
-                          </li>
+                          </li> */}
                         </ul>
                       </div>
 
@@ -577,16 +592,17 @@ const App: React.FC = () => {
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                         className="absolute inset-0 transition-all duration-700"
-                        title="Lokasi Store PaskibraRent"
+                        title="Lokasi Store KostumFadilyss"
                       ></iframe>
 
+
                       {/* Map Overlay Badge */}
-                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-slate-200 pointer-events-none">
+                      {/* <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-slate-200 pointer-events-none">
                         <span className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           Live Location
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -737,7 +753,7 @@ const App: React.FC = () => {
       {/* Modern Mega Footer */}
       <footer className="bg-slate-950 text-white border-t border-slate-900 relative z-10">
 
-        {/* Top CTA Bar */}
+        {/* Top CTA Bar
         <div className="border-b border-slate-800 bg-slate-900/50">
           <div className="container mx-auto px-4 py-12">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -753,7 +769,7 @@ const App: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="container mx-auto px-4 pt-16 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
@@ -761,7 +777,7 @@ const App: React.FC = () => {
             {/* Column 1: Brand */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center font-bold text-2xl text-red-700 shadow-lg shadow-white/10">P</div>
+                <img src="/images/logo.png" alt="Logo" className="w-12 h-12 rounded-xl object-contain border border-slate-700" />
                 <span className="text-2xl font-bold tracking-tight">{APP_NAME}</span>
               </div>
               <p className="text-slate-400 leading-relaxed text-sm">
@@ -797,12 +813,13 @@ const App: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><Phone size={18} /></div>
-                  <span className="font-mono text-white text-base">+62 812-3456-7890</span>
+                  <span className="font-mono text-white text-base">+62 895-4282-82092</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><Mail size={18} /></div>
-                  <span>halo@paskibrarent.id</span>
+                  <span>halo@kostumfadilyss.id</span>
                 </li>
+
               </ul>
             </div>
 
@@ -875,6 +892,14 @@ const App: React.FC = () => {
           </motion.div>
         </div>
       )}
+
+      {/* Scroll To Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-24 right-6 z-40 bg-slate-900 text-white p-3 rounded-full shadow-lg border border-slate-700 transition-all duration-300 transform hover:scale-110 ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}
+      >
+        <ArrowUp size={20} />
+      </button>
 
       {/* Global Floating WhatsApp Button */}
       {!isCartOpen && (
