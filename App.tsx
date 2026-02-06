@@ -973,7 +973,7 @@ const App: React.FC = () => {
                 <li><button onClick={() => setView('CATALOG')} className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} className="text-red-600" /> Sewa PDU Full Set</button></li>
                 <li><button onClick={() => setView('GALLERY')} className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} className="text-red-600" /> Galeri Pasukan</button></li>
                 <li><button onClick={() => setIsSizeGuideOpen(true)} className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} className="text-red-600" /> Panduan Ukuran</button></li>
-                <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} className="text-red-600" /> Karir</a></li>
+                {/* <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} className="text-red-600" /> Karir</a></li> */}
               </ul>
             </div>
 
@@ -983,7 +983,7 @@ const App: React.FC = () => {
               <ul className="space-y-6 text-slate-400 text-sm">
                 <li className="flex items-start gap-3">
                   <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><MapPin size={18} /></div>
-                  <span>Jl. Medan Merdeka Barat No. 12,<br />Gambir, Jakarta Pusat 10110</span>
+                  <span>Jl. Pahlawan No.41, Limus Nunggal,<br />Cileungsi, Bogor, Jawa Barat 16820</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><Phone size={18} /></div>
@@ -991,7 +991,7 @@ const App: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><Mail size={18} /></div>
-                  <span>halo@kostumfadilyss.id</span>
+                  <span>mohamadfadilah426@gmail.com</span>
                 </li>
 
               </ul>
