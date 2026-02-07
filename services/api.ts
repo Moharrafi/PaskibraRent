@@ -67,4 +67,23 @@ export const authService = {
     },
 };
 
+export const cartService = {
+    getCart: async () => {
+        const response = await api.get('/cart');
+        return response.data;
+    },
+    syncCart: async (items: any[]) => {
+        const response = await api.post('/cart/sync', { items });
+        return response.data;
+    },
+    addItem: async (id: string, quantity: number, rentalDays: number) => {
+        const response = await api.post('/cart/item', { id, quantity, rentalDays });
+        return response.data;
+    },
+    removeItem: async (id: string) => {
+        const response = await api.delete(`/cart/item/${id}`);
+        return response.data;
+    }
+};
+
 export default api;

@@ -6,7 +6,7 @@ import { CartItem, Costume, ViewState, BookingDetails, User } from './types';
 import CostumeCard from './components/CostumeCard';
 import CartDrawer from './components/CartDrawer';
 import CostumeDetailModal from './components/CostumeDetailModal';
-import api, { authService } from './services/api';
+import api, { authService, cartService } from './services/api';
 import AIChat from './components/AIChat';
 import GalleryPage from './components/GalleryPage';
 import SizeGuideModal from './components/SizeGuideModal';
@@ -114,10 +114,52 @@ const App: React.FC = () => {
     }
   }, []);
 
+  // Cart Persistence Logic
+  useEffect(() => {
+    if (user) {
+      cartService.getCart()
+        .then(items => {
+          // Transform DB items to CartItems
+          // DB items: { id, user_id, item_id, quantity, rental_days }
+          // We need to match item_id with COSTUMES to get details.
+          const mappedItems: CartItem[] = items.map((dbItem: any) => {
+            const costume = COSTUMES.find(c => c.id === dbItem.item_id);
+            if (costume) {
+              return { ...costume, quantity: dbItem.quantity, rentalDays: dbItem.rental_days };
+            }
+            return null;
+          }).filter(Boolean);
+          setCart(mappedItems);
+        })
+        .catch(console.error);
+    } else {
+      // Optional: Clear cart on load if not logged in? 
+      // No, keep local cart for guests.
+    }
+  }, [user]);
+
   // Authentication Logic
-  const handleLogin = (userData: User) => {
+  const handleLogin = async (userData: User) => {
     setUser(userData);
     setIsLoginModalOpen(false);
+
+    // Sync local cart to server
+    if (cart.length > 0) {
+      try {
+        const syncedItems = await cartService.syncCart(cart);
+        // mappedItems logic same as above
+        const mappedItems: CartItem[] = syncedItems.map((dbItem: any) => {
+          const costume = COSTUMES.find(c => c.id === dbItem.item_id);
+          if (costume) {
+            return { ...costume, quantity: dbItem.quantity, rentalDays: dbItem.rental_days };
+          }
+          return null;
+        }).filter(Boolean);
+        setCart(mappedItems);
+      } catch (e) {
+        console.error("Failed to sync cart", e);
+      }
+    }
   };
 
   const handleUpdateProfile = (name: string, email: string) => {
@@ -132,7 +174,7 @@ const App: React.FC = () => {
   const confirmLogout = () => {
     authService.logout();
     setUser(null);
-    setCart([]);
+    setCart([]); // Clear cart on logout as requested
     setView('HOME');
     setIsLogoutConfirmOpen(false);
     setIsMobileMenuOpen(false);
@@ -146,18 +188,22 @@ const App: React.FC = () => {
   }
 
   const handleRentAgainFromHistory = (items: CartItem[]) => {
-    setCart(prev => {
-      const newCart = [...prev];
-      items.forEach(newItem => {
-        const existingItemIndex = newCart.findIndex(c => c.id === newItem.id);
-        if (existingItemIndex > -1) {
-          newCart[existingItemIndex].quantity = newItem.quantity;
-        } else {
-          newCart.push(newItem);
+    // This might need sync if we want to add these to persistent cart immediately
+    // For now, simpler to just add to local and let the user interaction sync it (or sync explicitly)
+    cartService.syncCart(items).then(syncedItems => {
+      const mappedItems: CartItem[] = syncedItems.map((dbItem: any) => {
+        const costume = COSTUMES.find(c => c.id === dbItem.item_id);
+        if (costume) {
+          return { ...costume, quantity: dbItem.quantity, rentalDays: dbItem.rental_days };
         }
-      });
-      return newCart;
-    });
+        return null;
+      }).filter(Boolean);
+      // Append or replace? History usually implies replacing or adding.
+      // Let's just set it for now or merge.
+      // Simplified: just set cart to these items
+      setCart(mappedItems);
+    }).catch(() => setCart(items)); // Fallback
+
     setActiveUserModal(null);
     setIsCartOpen(true);
   };
@@ -176,28 +222,46 @@ const App: React.FC = () => {
 
   // Cart Logic
   const addToCart = (costume: Costume) => {
-    // Auth Check
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
+    // Allow guest to add to cart
+    // if (!user) {
+    //   setIsLoginModalOpen(true);
+    //   return;
+    // }
 
     setCart(prev => {
-      if (prev.find(item => item.id === costume.id)) return prev;
-      return [...prev, { ...costume, quantity: 1, rentalDays: 3 }];
+      const existing = prev.find(item => item.id === costume.id);
+      if (existing) return prev;
+      const newItem = { ...costume, quantity: 1, rentalDays: 3 };
+
+      // Sync if logged in
+      if (user) {
+        cartService.addItem(newItem.id, newItem.quantity, newItem.rentalDays).catch(console.error);
+      }
+
+      return [...prev, newItem];
     });
     setIsCartAnimating(true);
     setTimeout(() => setIsCartAnimating(false), 300);
   };
 
   const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+    setCart(prev => {
+      const newCart = prev.filter(item => item.id !== id);
+      if (user) {
+        cartService.removeItem(id).catch(console.error);
+      }
+      return newCart;
+    });
   };
 
   const updateCartQty = (id: string, delta: number) => {
     setCart(prev => prev.map(item => {
       if (item.id === id) {
-        return { ...item, quantity: Math.max(1, item.quantity + delta) };
+        const newQty = Math.max(1, item.quantity + delta);
+        if (user) {
+          cartService.addItem(id, newQty, item.rentalDays).catch(console.error);
+        }
+        return { ...item, quantity: newQty };
       }
       return item;
     }));
@@ -969,7 +1033,7 @@ const App: React.FC = () => {
                 {filteredCostumes.length > 0 ? (
                   <motion.div
                     layout
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                   >
                     {filteredCostumes.map(costume => (
                       <motion.div layout key={costume.id}>

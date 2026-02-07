@@ -257,14 +257,14 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
             <!-- Header -->
             <div class="flex justify-between items-start mb-12 pb-8 border-b border-slate-200">
                 <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 bg-red-700 rounded flex items-center justify-center text-white font-bold text-lg">P</div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <img src="${window.location.origin}/images/logo.png" alt="Logo" class="w-12 h-12 object-contain" />
                         <h1 class="text-2xl font-bold text-slate-900">${APP_NAME}</h1>
                     </div>
                     <p class="text-slate-500 text-sm">
-                        Jl. Medan Merdeka Barat No. 12<br>
-                        Gambir, Jakarta Pusat, 10110<br>
-                        DKI Jakarta, Indonesia
+                       Jl. Pahlawan No.41, Limus Nunggal,<br>
+                        Cileungsi, Bogor, 16820<br>
+                        Jawa Barat, Indonesia
                     </p>
                 </div>
                 <div class="text-right">
@@ -336,6 +336,8 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                 <div class="max-w-xs text-sm text-slate-500">
                     <p class="font-bold text-slate-900 mb-1">Metode Pembayaran</p>
                     <p>Bank Transfer - BCA</p>
+                    <p>No. Rekening: 4061593238</p>
+                    <p>a.n. MOH FADILAH</p>
                     <p class="mt-4 text-xs">Terima kasih telah mempercayakan kebutuhan kostum pasukan Anda kepada ${APP_NAME}.</p>
                 </div>
                 

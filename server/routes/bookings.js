@@ -124,7 +124,7 @@ router.post('/', async (req, res) => {
         // 2. Email ke Admin (Notifikasi)
         const adminMailOptions = {
             from: `"System Notif" <${process.env.MAIL_USER}>`,
-            to: 'mohamadfadilah426@gmail.com', // Admin fixed email
+            to: 'mohamadarraafi@gmail.com', // Admin fixed email
             subject: `[ADMIN] Booking Baru #${bookingId} - ${name}`,
             html: `
             <!DOCTYPE html>
@@ -147,8 +147,8 @@ router.post('/', async (req, res) => {
                     .total-section { background: #f8fafc; padding: 20px; border-radius: 12px; margin-top: 24px; text-align: right; border: 1px solid #e2e8f0; }
                     .total-label { font-size: 13px; color: #64748b; margin-bottom: 4px; }
                     .total-value { font-size: 24px; font-weight: 800; color: #0f172a; }
-                    .actions { margin-top: 32px; display: flex; gap: 16px; }
-                    .btn { flex: 1; text-align: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; transition: opacity 0.2s; }
+                    .actions { margin-top: 32px; width: 100%; }
+                    .btn { display: block; text-align: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; transition: opacity 0.2s; }
                     .btn:hover { opacity: 0.9; }
                     .btn-wa { background: #22c55e; color: white; box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.2); }
                     .btn-email { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
@@ -217,14 +217,20 @@ router.post('/', async (req, res) => {
                             <div class="total-value">Rp ${totalPrice.toLocaleString('id-ID')}</div>
                         </div>
 
-                        <div class="actions">
-                            <a href="https://wa.me/${phone}?text=Halo%20${name},%20saya%20Admin%20${APP_NAME}.%20Terima%20kasih%20telah%20melakukan%20booking.%20Kami%20telah%20menerima%20rincian%20pesanan%20Anda%20dan%20akan%20segera%20kami%20proses%20untuk%20pengecekan%20ketersediaan%20stok.%20Mohon%20ditunggu%20konfirmasinya." class="btn btn-wa">
-                                💬 Follow-up WhatsApp
-                            </a>
-                            <a href="mailto:${email}?subject=Konfirmasi%20Booking%20${APP_NAME}%20-%20#${bookingId}" class="btn btn-email">
-                                ✉️ Kirim Email
-                            </a>
-                        </div>
+                        <table class="actions" width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <td width="50%" align="right" style="padding-right:8px; vertical-align: left;">
+                                    <a href="https://wa.me/${phone}?text=Halo%20${name},%20saya%20Admin%20${APP_NAME}.%20Terima%20kasih%20telah%20melakukan%20booking.%20Kami%20telah%20menerima%20rincian%20pesanan%20Anda%20dan%20akan%20segera%20kami%20proses%20untuk%20pengecekan%20ketersediaan%20stok.%20Mohon%20ditunggu%20konfirmasinya." class="btn btn-wa" style="display: inline-block; width: auto; padding: 12px 24px;">
+                                        <img src="https://img.icons8.com/color/48/whatsapp--v1.png" alt="WhatsApp" width="20" height="20" style="vertical-align: middle; margin-right: 8px;"> Follow-up
+                                    </a>
+                                </td>
+                                <td width="50%" align="left" style="padding-left: 8px; vertical-align: left;">
+                                    <a href="mailto:${email}?subject=Konfirmasi%20Booking%20${APP_NAME}%20-%20#${bookingId}" class="btn btn-email" style="display: inline-block; width: auto; padding: 12px 24px;">
+                                        <img src="https://img.icons8.com/color/48/gmail-new.png" alt="Email" width="20" height="20" style="vertical-align: middle; margin-right: 8px;"> Kirim Email
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </body>
