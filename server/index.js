@@ -29,7 +29,11 @@ app.get('/', (req, res) => {
     res.send('Backend Server is Running');
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server running heavily on port ${PORT}`);
-});
+// Start Server only if not running in Vercel
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running heavily on port ${PORT}`);
+    });
+}
+
+module.exports = app;
