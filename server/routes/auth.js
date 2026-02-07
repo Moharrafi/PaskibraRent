@@ -126,11 +126,20 @@ router.get('/login', (req, res) => {
 
 // Login
 router.post('/login', async (req, res) => {
+    console.log('[LOGIN START] Request received for:', req.body.email);
     try {
         const { email, password } = req.body;
 
+        // Check JWT Secret
+        if (!process.env.JWT_SECRET) {
+            console.error('[LOGIN ERROR] JWT_SECRET is missing!');
+            return res.status(500).json({ message: 'Server Configuration Error: JWT_SECRET missing' });
+        }
+
         // Check if user exists
+        console.log('[LOGIN STEP] Querying DB...');
         const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        console.log('[LOGIN STEP] DB Result:', users.length > 0 ? 'User Found' : 'User Not Found');
 
         if (users.length === 0) {
             return res.status(401).json({ message: 'Password or Email is incorrect' });
@@ -138,26 +147,30 @@ router.post('/login', async (req, res) => {
 
         const user = users[0];
 
-        // Check if verified - OPTIONAL: Handle legacy users who are null/false but maybe should be allowed?
-        // For strict flow:
+        // Check verification
         if (user.is_verified === 0) {
             return res.status(401).json({ message: 'Akun belum diverifikasi. Silakan cek email Anda.' });
         }
 
         // Check password
+        console.log('[LOGIN STEP] Verifying password...');
         const validPassword = await bcrypt.compare(password, user.password);
+        console.log('[LOGIN STEP] Password Valid:', validPassword);
+
         if (!validPassword) {
             return res.status(401).json({ message: 'Password or Email is incorrect' });
         }
 
         // Generate Token
+        console.log('[LOGIN STEP] Signing JWT...');
         const token = jwt.sign({ user: { id: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        console.log('[LOGIN SUCCESS] Token generated.');
 
         res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error', error: err.message });
+        console.error('[LOGIN CRASH]', err);
+        res.status(500).json({ message: 'Server Logic Error', error: err.message, stack: err.stack });
     }
 });
 
