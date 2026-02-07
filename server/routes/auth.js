@@ -118,6 +118,12 @@ router.post('/verify', async (req, res) => {
     }
 });
 
+// Verify Token (Get User)
+// Add helpful message for GET request on login
+router.get('/login', (req, res) => {
+    res.status(405).json({ message: 'Method Not Allowed. Please use POST to login.' });
+});
+
 // Login
 router.post('/login', async (req, res) => {
     try {
