@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
-import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Youtube, Minus, Plus, ShoppingBag, X, Search, Calendar, Ruler, Info, RotateCcw, ChevronRight, ArrowUp, Menu, CheckCircle, ShieldCheck, Clock, Users, Play, MessageCircle, ChevronDown, CreditCard, User as UserIcon, LogOut, LogIn, AlertCircle, History, Lock } from 'lucide-react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Youtube, Minus, Plus, ShoppingBag, X, Search, Calendar, Ruler, Info, RotateCcw, ChevronRight, ArrowUp, Menu, CheckCircle, ShieldCheck, Clock, Users, Play, MessageCircle, ChevronDown, CreditCard, User as UserIcon, LogOut, LogIn, AlertCircle, History, Lock, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COSTUMES, APP_NAME, CONTACT_WA } from './constants';
 import { CartItem, Costume, ViewState, BookingDetails, User } from './types';
 import CostumeCard from './components/CostumeCard';
 import CartDrawer from './components/CartDrawer';
 import CostumeDetailModal from './components/CostumeDetailModal';
+import { authService } from './services/api';
 import AIChat from './components/AIChat';
 import GalleryPage from './components/GalleryPage';
 import SizeGuideModal from './components/SizeGuideModal';
@@ -44,10 +45,74 @@ const App: React.FC = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activeUserModal, setActiveUserModal] = useState<'PROFILE' | 'HISTORY' | 'PASSWORD' | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<'IDLE' | 'VERIFYING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+
+    if (isUserDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserDropdownOpen]);
+
+  // Check for logged-in user on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+
+      if (storedUser && token) {
+        // Optimistically set user from storage first
+        setUser(JSON.parse(storedUser));
+
+        // Verify with backend
+        try {
+          const freshUser = await authService.getCurrentUser();
+          setUser(freshUser);
+          localStorage.setItem('user', JSON.stringify(freshUser));
+        } catch (error) {
+          console.error("Session expired or invalid", error);
+          setUser(null);
+        }
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // Email Verification Logic
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('verify_token');
+
+    if (token) {
+      setVerificationStatus('VERIFYING');
+      authService.verifyEmail(token)
+        .then(data => {
+          setUser(data.user);
+          setVerificationStatus('SUCCESS');
+          window.history.replaceState({}, document.title, window.location.pathname);
+          setTimeout(() => setVerificationStatus('IDLE'), 3000);
+        })
+        .catch(err => {
+          console.error(err);
+          setVerificationStatus('ERROR');
+          setTimeout(() => setVerificationStatus('IDLE'), 3000);
+        });
+    }
+  }, []);
 
   // Authentication Logic
-  const handleLogin = (name: string, email: string) => {
-    setUser({ name, email });
+  const handleLogin = (userData: User) => {
+    setUser(userData);
     setIsLoginModalOpen(false);
   };
 
@@ -61,6 +126,7 @@ const App: React.FC = () => {
   };
 
   const confirmLogout = () => {
+    authService.logout();
     setUser(null);
     setCart([]);
     setView('HOME');
@@ -191,6 +257,43 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-red-200 selection:text-red-900">
+      <AnimatePresence>
+        {verificationStatus !== 'IDLE' && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 min-w-[300px]"
+            >
+              {verificationStatus === 'VERIFYING' && (
+                <>
+                  <Loader2 className="animate-spin text-red-600" size={32} />
+                  <p className="font-bold text-slate-700">Verifikasi Email...</p>
+                </>
+              )}
+              {verificationStatus === 'SUCCESS' && (
+                <>
+                  <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                    <CheckCircle size={24} />
+                  </div>
+                  <p className="font-bold text-slate-700">Email Berhasil Diverifikasi!</p>
+                  <p className="text-sm text-slate-500">Anda telah masuk otomatis.</p>
+                </>
+              )}
+              {verificationStatus === 'ERROR' && (
+                <>
+                  <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+                    <AlertCircle size={24} />
+                  </div>
+                  <p className="font-bold text-slate-700">Verifikasi Gagal</p>
+                  <p className="text-sm text-slate-500">Link kadaluwarsa atau tidak valid.</p>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Navigation */}
       <motion.nav
@@ -251,6 +354,7 @@ const App: React.FC = () => {
                 <AnimatePresence>
                   {isUserDropdownOpen && (
                     <motion.div
+                      ref={dropdownRef}
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -291,12 +395,6 @@ const App: React.FC = () => {
                           <LogOut size={16} className="group-hover:translate-x-1 transition-transform" /> Keluar
                         </button>
                       </div>
-
-                      {/* Overlay to close when clicking outside (transparent) */}
-                      <div
-                        className="fixed inset-0 z-[-1]"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      />
                     </motion.div>
                   )}
                 </AnimatePresence>

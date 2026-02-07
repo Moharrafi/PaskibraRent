@@ -30,8 +30,10 @@ export interface BookingDetails {
 }
 
 export interface User {
+  id?: string | number;
   name: string;
   email: string;
+  role?: string;
   avatar?: string;
 }
 

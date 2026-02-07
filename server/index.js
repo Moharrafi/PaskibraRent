@@ -1,0 +1,35 @@
+
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const { pool } = require('./db');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+
+// Test Database Connection
+app.get('/test-db', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT NOW() as now');
+        res.json({ message: 'Database connected successfully', time: rows[0].now });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database connection failed', details: err.message });
+    }
+});
+
+app.get('/', (req, res) => {
+    res.send('Backend Server is Running');
+});
+
+// Start Server
+app.listen(PORT, () => {
+    console.log(`Server running heavily on port ${PORT}`);
+});
