@@ -17,7 +17,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bookings', require('./routes/bookings'));
 
 // Test Database Connection
-app.get('/test-db', async (req, res) => {
+// Test Database Connection
+app.get('/api/test-db', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT NOW() as now');
         res.json({ message: 'Database connected successfully', time: rows[0].now });
