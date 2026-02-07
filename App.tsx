@@ -6,7 +6,7 @@ import { CartItem, Costume, ViewState, BookingDetails, User } from './types';
 import CostumeCard from './components/CostumeCard';
 import CartDrawer from './components/CartDrawer';
 import CostumeDetailModal from './components/CostumeDetailModal';
-import { authService } from './services/api';
+import api, { authService } from './services/api';
 import AIChat from './components/AIChat';
 import GalleryPage from './components/GalleryPage';
 import SizeGuideModal from './components/SizeGuideModal';
@@ -44,6 +44,7 @@ const App: React.FC = () => {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activeUserModal, setActiveUserModal] = useState<'PROFILE' | 'HISTORY' | 'PASSWORD' | null>(null);
+  const [isMobileProfileOpen, setIsMobileProfileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<'IDLE' | 'VERIFYING' | 'SUCCESS' | 'ERROR'>('IDLE');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -199,13 +200,28 @@ const App: React.FC = () => {
     }));
   };
 
-  const handleCheckout = (details: BookingDetails) => {
-    console.log("Booking Confirmed:", details, cart);
-    setLastBooking(details);
-    setCart([]);
-    setIsCartOpen(false);
-    setView('SUCCESS');
-    window.scrollTo(0, 0);
+  const [isBookingLoading, setIsBookingLoading] = useState(false);
+
+  // ... (keeping other states)
+
+  const handleCheckout = async (details: BookingDetails) => {
+    setIsBookingLoading(true);
+    try {
+      // Send to backend
+      const response = await api.post('/bookings', details);
+      console.log("Booking Email Sent:", response.data);
+
+      setLastBooking(details);
+      setCart([]);
+      setIsCartOpen(false);
+      setView('SUCCESS');
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.error("Booking Failed:", error);
+      alert("Maaf, terjadi kesalahan saat memproses booking. Silakan coba lagi atau hubungi via WhatsApp.");
+    } finally {
+      setIsBookingLoading(false);
+    }
   };
 
   const handleRentAgain = () => {
@@ -319,7 +335,7 @@ const App: React.FC = () => {
               <button
                 key={item}
                 onClick={() => setView(item as ViewState)}
-                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${view === item
+                className={`relative px-3 lg:px-5 py-2 rounded-full text-xs lg:text-sm font-semibold transition-all duration-300 ${view === item
                   ? 'text-slate-950 bg-white'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
@@ -327,27 +343,27 @@ const App: React.FC = () => {
                 {item === 'HOME' ? 'Beranda' : item === 'CATALOG' ? 'Katalog' : 'Galeri'}
               </button>
             ))}
-            <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })} className="ml-2 px-5 py-2 rounded-full text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+            <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })} className="ml-1 lg:ml-2 px-3 lg:px-5 py-2 rounded-full text-xs lg:text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
               Kontak
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3">
             {/* User Login/Profile Section with Dropdown */}
             {user ? (
-              <div className="hidden md:flex items-center gap-4 pl-4 border-l border-slate-700 ml-4 relative">
+              <div className="hidden md:flex items-center gap-2 lg:gap-4 pl-2 lg:pl-4 border-l border-slate-700 ml-2 lg:ml-4 relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center gap-3 group focus:outline-none"
+                  className="flex items-center gap-2 lg:gap-3 group focus:outline-none"
                 >
-                  <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-200 border border-slate-700 ring-2 ring-transparent group-hover:ring-slate-600 transition-all">
-                    <UserIcon size={18} />
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-200 border border-slate-700 ring-2 ring-transparent group-hover:ring-slate-600 transition-all">
+                    <UserIcon size={16} className="lg:w-[18px] lg:h-[18px]" />
                   </div>
-                  <div className="text-left hidden lg:block">
+                  <div className="text-left hidden xl:block">
                     <p className="text-white text-sm font-bold leading-none max-w-[100px] truncate">{user.name}</p>
                     <p className="text-slate-400 text-[10px] font-medium leading-none mt-1">Member</p>
                   </div>
-                  <ChevronDown size={16} className={`text-slate-400 transition-transform duration-300 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={14} className={`text-slate-400 transition-transform duration-300 lg:w-4 lg:h-4 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu */}
@@ -402,7 +418,7 @@ const App: React.FC = () => {
             ) : (
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 rounded-full transition-colors border border-white/20 hover:border-white/50"
+                className="hidden md:flex items-center gap-2 px-3 lg:px-4 py-2 text-xs lg:text-sm font-semibold text-white hover:bg-white/10 rounded-full transition-colors border border-white/20 hover:border-white/50"
               >
                 <LogIn size={16} />
                 <span>Masuk</span>
@@ -411,7 +427,7 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setIsCartOpen(true)}
-              className={`relative p-3 rounded-full transition-all duration-300 group ${isCartAnimating ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
+              className={`relative p-2 lg:p-3 rounded-full transition-all duration-300 group ${isCartAnimating ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
             >
               <ShoppingBag className={`w-5 h-5 ${isCartAnimating ? 'scale-110' : 'group-hover:scale-110'} transition-transform`} />
               {cart.length > 0 && (
@@ -436,29 +452,53 @@ const App: React.FC = () => {
             >
               <div className="p-4 space-y-2">
                 {user ? (
-                  <div className="flex flex-col gap-2 p-4 bg-slate-800/50 rounded-xl mb-2">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white">
-                        <UserIcon size={20} />
+                  <div className="flex flex-col p-4 bg-slate-800/50 rounded-xl mb-2 overflow-hidden">
+                    <button
+                      onClick={() => setIsMobileProfileOpen(!isMobileProfileOpen)}
+                      className="flex items-center justify-between w-full"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white">
+                          <UserIcon size={20} />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-white font-bold text-sm">{user.name}</p>
+                          <p className="text-slate-400 text-xs">{user.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-white font-bold text-sm">{user.name}</p>
-                        <p className="text-slate-400 text-xs">{user.email}</p>
-                      </div>
-                    </div>
-                    <div className="h-px bg-slate-700 my-1" />
-                    <button onClick={() => openUserModal('PROFILE')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2">
-                      <UserIcon size={14} /> Profil Pengguna
+                      <ChevronDown
+                        size={16}
+                        className={`text-slate-400 transition-transform duration-300 ${isMobileProfileOpen ? 'rotate-180' : ''}`}
+                      />
                     </button>
-                    <button onClick={() => openUserModal('HISTORY')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2">
-                      <History size={14} /> Riwayat Penyewaan
-                    </button>
-                    <button onClick={() => openUserModal('PASSWORD')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2">
-                      <Lock size={14} /> Ganti Password
-                    </button>
-                    <button onClick={requestLogout} className="text-left text-red-400 text-sm py-2 hover:text-red-300 flex items-center gap-2 font-medium">
-                      <LogOut size={14} /> Keluar Akun
-                    </button>
+
+                    <AnimatePresence>
+                      {isMobileProfileOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="h-px bg-slate-700 my-3" />
+                          <div className="flex flex-col gap-1">
+                            <button onClick={() => openUserModal('PROFILE')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2 pl-1">
+                              <UserIcon size={14} /> Profil Pengguna
+                            </button>
+                            <button onClick={() => openUserModal('HISTORY')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2 pl-1">
+                              <History size={14} /> Riwayat Penyewaan
+                            </button>
+                            <button onClick={() => openUserModal('PASSWORD')} className="text-left text-slate-300 text-sm py-2 hover:text-white flex items-center gap-2 pl-1">
+                              <Lock size={14} /> Ganti Password
+                            </button>
+                            <button onClick={requestLogout} className="text-left text-red-400 text-sm py-2 hover:text-red-300 flex items-center gap-2 font-medium pl-1">
+                              <LogOut size={14} /> Keluar Akun
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ) : (
                   <button onClick={() => { setIsLoginModalOpen(true); setIsMobileMenuOpen(false); }} className="w-full text-left font-medium text-white p-4 bg-red-600 rounded-xl mb-2 flex items-center gap-2 justify-center">
@@ -1158,6 +1198,7 @@ const App: React.FC = () => {
                   onUpdateQty={updateCartQty}
                   onCheckout={handleCheckout}
                   onClose={() => setIsCartOpen(false)}
+                  isLoading={isBookingLoading}
                 />
               </div>
             </div>
