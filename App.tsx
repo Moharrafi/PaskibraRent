@@ -27,6 +27,9 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; classN
 );
 
 const App: React.FC = () => {
+  // Debug environment variable
+  console.log('Current VITE_API_URL:', import.meta.env.VITE_API_URL || 'Defaulting to localhost');
+
   const [view, setView] = useState<ViewState>('HOME');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
