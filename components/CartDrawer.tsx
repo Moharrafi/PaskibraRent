@@ -8,10 +8,11 @@ interface CartDrawerProps {
   onUpdateQty: (id: string, delta: number) => void;
   onCheckout: (details: BookingDetails) => void;
   onClose: () => void;
+  onViewCatalog: () => void;
   isLoading?: boolean;
 }
 
-const CartDrawer: React.FC<CartDrawerProps> = ({ items, onRemove, onUpdateQty, onCheckout, onClose, isLoading = false }) => {
+const CartDrawer: React.FC<CartDrawerProps> = ({ items, onRemove, onUpdateQty, onCheckout, onClose, onViewCatalog, isLoading = false }) => {
   const [step, setStep] = useState<1 | 2>(1);
   const [rentalDuration, setRentalDuration] = useState<number>(3);
   const [bookingData, setBookingData] = useState<Partial<BookingDetails>>({
@@ -116,7 +117,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ items, onRemove, onUpdateQty, o
         </div>
         <h3 className="text-xl font-bold text-slate-800 mb-2">Keranjang Kosong</h3>
         <p className="text-slate-500 mb-6">Belum ada kostum yang dipilih untuk pasukan Anda.</p>
-        <button onClick={onClose} className="text-red-700 font-medium hover:underline">
+        <button onClick={() => { onClose(); onViewCatalog(); }} className="text-red-700 font-medium hover:underline">
           Lihat Katalog
         </button>
       </div>

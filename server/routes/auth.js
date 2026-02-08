@@ -46,13 +46,19 @@ router.post('/register', async (req, res) => {
         } catch (insertError) {
             // Fallback for old schema if migration failed silently (should not happen but safe)
             if (insertError.code === 'ER_BAD_FIELD_ERROR') {
-                await pool.query(
+                console.warn('Using fallback registration (missing verification columns)');
+                const [result] = await pool.query(
                     'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
                     [name, email, bcryptPassword]
                 );
-                // If we fall back, we can't do verification, so just return token logic as before? 
-                // Better to fail or assume verified. For now, assuming migration worked.
-                throw insertError;
+                newUserId = result.insertId;
+
+                // If fallback is used, we cannot do email verification
+                // Return success immediately without sending email
+                return res.json({
+                    message: 'Registrasi berhasil (Legacy Mode). Silakan login.',
+                    warning: 'Verification skipped due to schema version.'
+                });
             }
             throw insertError;
         }
@@ -110,7 +116,16 @@ router.post('/verify', async (req, res) => {
         // Generate Login Token
         const jwtToken = jwt.sign({ user: { id: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({ token: jwtToken, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+        res.json({
+            token: jwtToken,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                created_at: user.created_at
+            }
+        });
 
     } catch (err) {
         console.error(err.message);
@@ -166,7 +181,16 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ user: { id: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '1h' });
         console.log('[LOGIN SUCCESS] Token generated.');
 
-        res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                created_at: user.created_at
+            }
+        });
 
     } catch (err) {
         console.error('[LOGIN CRASH]', err);
@@ -182,7 +206,7 @@ router.get('/me', async (req, res) => {
 
         const payload = jwt.verify(token, process.env.JWT_SECRET);
 
-        const [users] = await pool.query('SELECT id, name, email, role FROM users WHERE id = ?', [payload.user.id]);
+        const [users] = await pool.query('SELECT id, name, email, role, created_at FROM users WHERE id = ?', [payload.user.id]);
 
         if (users.length === 0) return res.status(404).json({ message: 'User not found' });
 

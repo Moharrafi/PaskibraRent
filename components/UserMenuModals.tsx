@@ -87,7 +87,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                             <span className="text-white text-xs font-bold">Ubah</span>
                         </div>
                     </div>
-                    <p className="text-slate-500 text-sm">Member sejak 2024</p>
+                    <p className="text-slate-500 text-sm">
+                        Member sejak {user.created_at ? new Date(user.created_at).getFullYear() : '2024'}
+                    </p>
                 </div>
 
                 <div className="space-y-4">

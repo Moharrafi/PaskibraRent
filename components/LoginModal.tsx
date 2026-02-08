@@ -37,8 +37,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
                 onClose();
                 setFormData({ name: '', email: '', password: '' });
             } else {
-                await authService.register(formData.name, formData.email, formData.password);
-                setIsVerificationSent(true);
+                const response = await authService.register(formData.name, formData.email, formData.password);
+
+                // Check if it's legacy mode (no verification)
+                if (response.warning || response.message.includes('Legacy Mode')) {
+                    setIsLoginView(true);
+                    setError(response.message || 'Registrasi berhasil! Silakan login.');
+                } else {
+                    // Standard flow with email verification
+                    setIsVerificationSent(true);
+                }
+
                 setFormData({ name: '', email: '', password: '' });
             }
         } catch (err: any) {

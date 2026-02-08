@@ -35,6 +35,7 @@ export interface User {
   email: string;
   role?: string;
   avatar?: string;
+  created_at?: string;
 }
 
 export type ViewState = 'HOME' | 'CATALOG' | 'CART' | 'SUCCESS' | 'GALLERY';

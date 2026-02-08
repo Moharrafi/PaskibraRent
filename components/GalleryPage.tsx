@@ -86,9 +86,16 @@ const galleryItems = [
   }
 ];
 
+import SEO from './SEO';
+
 const GalleryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO
+        title="Galeri Pasukan & Event - KostumFadilyss"
+        description="Dokumentasi foto pasukan Paskibra yang menggunakan kostum dan seragam dari kami. Lihat bagaimana mereka tampil memukau di berbagai lomba dan upacara."
+        url="/gallery"
+      />
       {/* Header Banner */}
       <div className="bg-slate-900 text-white py-20 px-4 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -118,6 +125,7 @@ const GalleryPage: React.FC = () => {
                   src={item.image}
                   alt={item.title}
                   className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-700"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                   <span className="inline-block bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded mb-2 w-fit">
