@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const nodemailer = require('nodemailer');
+const { pool } = require('../db');
+const jwt = require('jsonwebtoken');
 const APP_NAME = "PaskibraRent";
 
 // Create Transporter
@@ -12,18 +14,117 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-router.post('/', async (req, res) => {
+// Middleware to verify token
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.status(401).json({ message: 'Akses ditolak. Silakan login.' });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Token tidak valid.' });
+        req.user = user;
+        next();
+    });
+};
+
+// GET User Bookings
+router.get('/my-bookings', authenticateToken, async (req, res) => {
     try {
+        const userId = req.user.user.id;
+
+        // 1. Get Bookings
+        const [bookings] = await pool.query(
+            'SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC',
+            [userId]
+        );
+
+        // 2. Get Items for each booking
+        const bookingsWithItems = await Promise.all(bookings.map(async (booking) => {
+            const [items] = await pool.query(
+                'SELECT * FROM booking_items WHERE booking_id = ?',
+                [booking.id]
+            );
+
+            // Check status logic: if returnDate < today and status is 'Sedang Disewa', make it 'Selesai'
+            // DB Date is usually YYYY-MM-DD.
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const returnDate = new Date(booking.return_date);
+
+            let status = booking.status;
+            if (status === 'Sedang Disewa' && returnDate < today) {
+                status = 'Selesai';
+                // Optionally update DB lazily
+                await pool.query('UPDATE bookings SET status = ? WHERE id = ?', ['Selesai', booking.id]);
+            }
+
+            return {
+                ...booking,
+                status,
+                items
+            };
+        }));
+
+        res.json(bookingsWithItems);
+    } catch (err) {
+        console.error('Error fetching bookings:', err);
+        res.status(500).json({ message: 'Gagal mengambil riwayat booking' });
+    }
+});
+
+router.post('/', async (req, res) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
         const { name, institution, phone, email, pickupDate, returnDate, rentalDuration, totalPrice, items } = req.body;
+
+        // Auth check (Optional based on rules, but we need user_id)
+        const authHeader = req.headers['authorization'];
+        let userId = null;
+
+        if (authHeader) {
+            const token = authHeader.split(' ')[1];
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                userId = decoded.user.id;
+            } catch (e) {
+                console.warn('Invalid token for booking');
+            }
+        }
+
+        if (!userId) {
+            // If we require login for booking
+            return res.status(401).json({ message: 'Silakan login untuk melakukan pemesanan.' });
+        }
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'Keranjang belanja kosong' });
         }
 
         // Generate Booking ID
-        const bookingId = `BOOK-${Date.now()}`;
+        const bookingId = `TRX-${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}`;
 
-        // 1. Email ke Customer (Konfirmasi)
+        // 1. Insert into Bookings
+        await connection.query(
+            `INSERT INTO bookings 
+            (id, user_id, total_price, status, pickup_date, return_date, rental_duration, customer_name, customer_institution, customer_phone, customer_email) 
+            VALUES (?, ?, ?, 'Menunggu', ?, ?, ?, ?, ?, ?, ?)`,
+            [bookingId, userId, totalPrice, pickupDate, returnDate, rentalDuration, name, institution, phone, email]
+        );
+
+        // 2. Insert Items
+        for (const item of items) {
+            await connection.query(
+                `INSERT INTO booking_items (booking_id, item_name, item_qty, item_price, item_category, item_image) VALUES (?, ?, ?, ?, ?, ?)`,
+                [bookingId, item.name, item.quantity, item.price, item.category || 'general', item.image]
+            );
+        }
+
+        await connection.commit();
+
+        // 3. Send Emails (Async - don't block response) (Kept original logic)
         const customerMailOptions = {
             from: `"PaskibraRent Orders" <${process.env.MAIL_USER}>`,
             to: email, // Email pemesan
@@ -121,7 +222,6 @@ router.post('/', async (req, res) => {
             `
         };
 
-        // 2. Email ke Admin (Notifikasi)
         const adminMailOptions = {
             from: `"System Notif" <${process.env.MAIL_USER}>`,
             to: 'mohamadfadilah426@gmail.com', // Admin fixed email
@@ -238,17 +338,17 @@ router.post('/', async (req, res) => {
             `
         };
 
-        // Kirim keduanya
-        await Promise.all([
-            transporter.sendMail(customerMailOptions),
-            transporter.sendMail(adminMailOptions)
-        ]);
+        transporter.sendMail(customerMailOptions).catch(console.error);
+        transporter.sendMail(adminMailOptions).catch(console.error);
 
         res.json({ message: 'Booking berhasil dikirim', bookingId: bookingId });
 
     } catch (err) {
+        await connection.rollback();
         console.error('Booking Error:', err);
         res.status(500).json({ message: 'Gagal memproses booking', error: err.message });
+    } finally {
+        connection.release();
     }
 });
 

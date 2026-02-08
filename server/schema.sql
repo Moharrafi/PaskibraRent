@@ -1,6 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
@@ -16,4 +16,32 @@ CREATE TABLE IF NOT EXISTS cart_items (
   rental_days INT DEFAULT 3,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS bookings (
+  id VARCHAR(50) PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  total_price DECIMAL(15, 2) NOT NULL,
+  status VARCHAR(50) DEFAULT 'Menunggu',
+  pickup_date DATE NOT NULL,
+  return_date DATE NOT NULL,
+  rental_duration INT NOT NULL,
+  customer_name VARCHAR(255),
+  customer_institution VARCHAR(255),
+  customer_phone VARCHAR(50),
+  customer_email VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS booking_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  booking_id VARCHAR(50) NOT NULL,
+  item_name VARCHAR(255) NOT NULL,
+  item_qty INT NOT NULL,
+  item_price DECIMAL(15, 2) NOT NULL,
+  item_category VARCHAR(50),
+  item_image VARCHAR(512),
+  FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
 );

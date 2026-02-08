@@ -136,51 +136,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     );
 };
 
-// --- 2. Rental History Modal (Enhanced) ---
+import api from '../services/api';
 
-// Enhanced Mock Data
-const MOCK_HISTORY = [
-    {
-        id: 'TRX-8821-2024',
-        date: '15 Feb 2024',
-        pickupDate: '20 Feb 2024',
-        returnDate: '23 Feb 2024',
-        duration: 3,
-        status: 'Selesai',
-        total: 6375000,
-        itemsSummary: 'Seragam PDU Putra (x15), Sepatu PDH (x15)',
-        details: [
-            { name: 'Seragam PDU Paskibraka Putra (Lengkap)', qty: 15, price: 350000, image: 'https://picsum.photos/id/1005/100/100' },
-            { name: 'Sepatu PDH Pantofel Hitam Mengkilap', qty: 15, price: 75000, image: 'https://picsum.photos/id/1071/100/100' }
-        ]
-    },
-    {
-        id: 'TRX-9921-2024',
-        date: '01 Mar 2024',
-        pickupDate: '05 Mar 2024',
-        returnDate: '08 Mar 2024',
-        duration: 3,
-        status: 'Sedang Disewa',
-        total: 240000,
-        itemsSummary: 'Sarung Tangan Putih (2 Lusin)',
-        details: [
-            { name: 'Sarung Tangan Putih (1 Lusin)', qty: 2, price: 120000, image: 'https://picsum.photos/id/201/100/100' }
-        ]
-    },
-    {
-        id: 'TRX-7734-2023',
-        date: '10 Nov 2023',
-        pickupDate: '12 Nov 2023',
-        returnDate: '15 Nov 2023',
-        duration: 3,
-        status: 'Selesai',
-        total: 1350000,
-        itemsSummary: 'Atribut Evolet (x30)',
-        details: [
-            { name: 'Set Atribut Evolet & Pangkat', qty: 30, price: 45000, image: 'https://picsum.photos/id/104/100/100' }
-        ]
-    },
-];
+// ... (imports remain)
+
+// --- 2. Rental History Modal (Enhanced) ---
 
 const StatusBadge = ({ status }: { status: string }) => {
     const styles = {
@@ -205,7 +165,9 @@ interface RentalHistoryModalProps {
 }
 
 export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, onClose, user, onRentAgain }) => {
-    const [selectedTrx, setSelectedTrx] = useState<typeof MOCK_HISTORY[0] | null>(null);
+    const [history, setHistory] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedTrx, setSelectedTrx] = useState<any | null>(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [statusFilter, setStatusFilter] = useState('Semua');
@@ -215,16 +177,58 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
 
     const handleBack = () => setSelectedTrx(null);
 
+    // Fetch History
+    React.useEffect(() => {
+        if (isOpen && user) {
+            setIsLoading(true);
+            api.get('/bookings/my-bookings')
+                .then(res => {
+                    // Map API response to UI format
+                    const mappedHistory = res.data.map((b: any) => {
+                        const itemsSummary = b.items.map((i: any) => `${i.item_name} (x${i.item_qty})`).join(', ');
+
+                        // Parse dates securely
+                        const formatDate = (dateString: string) => {
+                            const date = new Date(dateString);
+                            return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                        };
+
+                        return {
+                            id: b.id,
+                            date: formatDate(b.created_at),
+                            pickupDate: formatDate(b.pickup_date),
+                            returnDate: formatDate(b.return_date),
+                            duration: b.rental_duration,
+                            status: b.status, // API already handles 'Selesai' logic
+                            total: Number(b.total_price),
+                            itemsSummary: itemsSummary,
+                            details: b.items.map((i: any) => ({
+                                name: i.item_name,
+                                qty: i.item_qty,
+                                price: Number(i.item_price),
+                                image: i.item_image || '/images/placeholder_costume.jpg'
+                            })),
+                            // Keep raw date for filtering if needed
+                            rawDate: new Date(b.created_at)
+                        };
+                    });
+                    setHistory(mappedHistory);
+                })
+                .catch(err => console.error("Failed to fetch history:", err))
+                .finally(() => setIsLoading(false));
+        }
+    }, [isOpen, user]);
+
     // Helper to parse "15 Feb 2024" to Date object
-    const parseMockDate = (dateStr: string) => {
-        const [day, month, year] = dateStr.split(' ');
-        const months: { [key: string]: number } = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-        return new Date(parseInt(year), months[month] || 0, parseInt(day));
+    const parseLocaleDate = (dateStr: string) => {
+        // This is a rough parser for the display format "20 Feb 2024"
+        // Better to use rawDate from the mapped object for filtering
+        return new Date(dateStr);
     };
 
     // Filter Logic
-    const filteredHistory = MOCK_HISTORY.filter(item => {
-        const itemDate = parseMockDate(item.date);
+    const filteredHistory = history.filter(item => {
+        const itemDate = item.rawDate;
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
 
@@ -320,7 +324,7 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        ${selectedTrx.details.map(item => `
+                        ${selectedTrx.details.map((item: any) => `
                             <tr>
                                 <td class="py-4 text-slate-800 font-medium">${item.name}</td>
                                 <td class="py-4 text-slate-500 text-center">${selectedTrx.duration} Hari</td>
@@ -377,9 +381,9 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
         if (!selectedTrx) return;
 
         // Convert details to array for the handler
-        const itemsToRent = selectedTrx.details.map(detail => {
+        const itemsToRent = selectedTrx.details.map((detail: any) => {
             // Try to find matching costume from constants to get full data (category, id, etc)
-            const matchedCostume = COSTUMES.find(c => c.name === detail.name);
+            const matchedCostume = COSTUMES.find(c => c.name === detail.name); // This name match might be fragile if names change
             if (matchedCostume) {
                 return {
                     ...matchedCostume,
@@ -387,7 +391,7 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                     rentalDays: 3 // Default reset to 3 days for new order
                 };
             }
-            // Fallback if not found exact match (should ideally allow this in a real app or handle error)
+            // Fallback if not found exact match
             return null;
         }).filter(Boolean); // Remove nulls
 
@@ -413,7 +417,7 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                         exit={{ opacity: 0, x: 20 }}
                         className="p-6 bg-slate-50 min-h-full"
                     >
-                        {/* Detail View Header - SAME AS BEFORE BUT WIDER */}
+                        {/* Detail View Header */}
                         <div className="flex items-center gap-3 mb-6">
                             <button onClick={handleBack} className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors text-slate-600">
                                 <ArrowLeft size={18} />
@@ -480,7 +484,7 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
                             <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-50 pb-2">Rincian Item</h5>
                             <div className="space-y-4">
-                                {selectedTrx.details.map((item, idx) => (
+                                {selectedTrx.details.map((item: any, idx: number) => (
                                     <div key={idx} className="flex gap-4">
                                         <div className="w-14 h-14 bg-slate-100 rounded-lg overflow-hidden shrink-0 border border-slate-200">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -557,7 +561,12 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
 
                         {/* --- LIST CONTENT --- */}
                         <div className="p-6 space-y-3 flex-1 overflow-y-auto">
-                            {filteredHistory.length > 0 ? (
+                            {isLoading ? (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <Loader2 className="animate-spin text-slate-400" size={32} />
+                                    <p className="text-slate-400 mt-2 text-sm">Memuat data transaksi...</p>
+                                </div>
+                            ) : filteredHistory.length > 0 ? (
                                 filteredHistory.map((item) => (
                                     <div
                                         key={item.id}

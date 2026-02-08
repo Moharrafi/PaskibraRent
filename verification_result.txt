@@ -1,0 +1,3 @@
+--- Verification Start ---
+Starting Rental History Verification...
+1. Registering user: test1770533980898@example.com
