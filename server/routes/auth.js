@@ -69,10 +69,10 @@ router.post('/register', async (req, res) => {
         console.log('DEBUG: Generated Verification Link:', verificationLink);
 
         const mailOptions = {
-            from: `"PaskibraRent Team" <${process.env.MAIL_USER}>`,
+            from: `"KostumFadilyss Team" <${process.env.MAIL_USER}>`,
             to: email,
-            subject: 'Verifikasi Akun PaskibraRent Anda',
-            html: getVerificationEmailTemplate(name, verificationLink),
+            subject: 'Verifikasi Akun KostumFadilyss Anda',
+            html: getVerificationEmailTemplate(name, verificationLink, clientUrl),
         };
 
         try {

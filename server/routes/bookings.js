@@ -2,7 +2,7 @@ const router = require('express').Router();
 const nodemailer = require('nodemailer');
 const { pool } = require('../db');
 const jwt = require('jsonwebtoken');
-const APP_NAME = "PaskibraRent";
+const APP_NAME = "KostumFadilyss";
 
 // Create Transporter
 const transporter = nodemailer.createTransport({
@@ -126,9 +126,9 @@ router.post('/', async (req, res) => {
 
         // 3. Send Emails (Async - don't block response) (Kept original logic)
         const customerMailOptions = {
-            from: `"PaskibraRent Orders" <${process.env.MAIL_USER}>`,
+            from: `"KostumFadilyss Orders" <${process.env.MAIL_USER}>`,
             to: email, // Email pemesan
-            subject: `[PaskibraRent] Konfirmasi Booking - ${bookingId}`,
+            subject: `[KostumFadilyss] Konfirmasi Booking - ${bookingId}`,
             html: `
             <!DOCTYPE html>
             <html>

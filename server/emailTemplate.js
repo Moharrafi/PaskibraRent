@@ -1,53 +1,78 @@
 
-const getVerificationEmailTemplate = (name, verificationLink) => {
+const getVerificationEmailTemplate = (name, verificationLink, clientUrl = 'https://paskibrarent.vercel.app') => {
+    // Force use production URL for images to ensure they load in email clients
+    const logoUrl = 'https://paskibrarent.vercel.app/images/logo.png';
+
     return `
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Verifikasi Akun PaskibraRent</title>
+        <title>Verifikasi Akun KostumFadilyss</title>
         <style>
-            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-            .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-            .header { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 32px; text-align: center; }
-            .header h1 { margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-            .content { padding: 40px 32px; color: #334155; line-height: 1.7; }
-            .greeting { color: #1e293b; font-size: 22px; font-weight: 600; margin-bottom: 16px; margin-top: 0; }
-            .message { margin-bottom: 24px; font-size: 16px; color: #475569; }
-            .button-wrapper { text-align: center; margin: 32px 0; }
-            .button { background-color: #dc2626; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; transition: background-color 0.2s; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2); }
-            .button:hover { background-color: #b91c1c; }
-            .link-text { font-size: 12px; color: #64748b; margin-top: 24px; word-break: break-all; text-align: center; }
-            .footer { background-color: #f1f5f9; padding: 24px; text-align: center; font-size: 13px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
-            .footer p { margin: 4px 0; }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+            body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; line-height: 1.6; color: #1f2937; }
+            .container { max-width: 500px; margin: 60px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; border: 1px solid #f3f4f6; }
+            .header { padding: 40px 0 24px; text-align: center; background-color: #ffffff; }
+            .branding { display: inline-flex; align-items: center; justify-content: center; gap: 12px; }
+            .logo { height: 40px; width: auto; display: block; }
+            .title { margin: 0; color: #ef4444; font-size: 24px; font-weight: 800; letter-spacing: -0.025em; line-height: 1; }
+            .content { padding: 0 48px 48px; text-align: center; }
+            .greeting { color: #111827; font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+            .message { margin-bottom: 32px; font-size: 16px; color: #6b7280; line-height: 1.6; }
+            .button { background-color: #ef4444; color: #ffffff !important; text-decoration: none; padding: 14px 36px; border-radius: 9999px; font-weight: 600; font-size: 15px; display: inline-block; transition: all 0.2s; border: 2px solid #ef4444; }
+            .button:hover { background-color: #ffffff; color: #ef4444 !important; }
+            .warning { background-color: #fef2f2; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; margin: 32px 0 0; display: inline-block; }
+            .link-text { margin-top: 32px; font-size: 12px; color: #9ca3af; word-break: break-all; }
+            .link-text a { color: #ef4444; text-decoration: none; font-weight: 500; }
+            .footer { padding: 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #f3f4f6; background-color: #f9fafb; }
+            
+            /* Email client compatibility for flexbox */
+            @media only screen and (max-width: 600px) {
+                .container { margin: 20px; width: auto; border-radius: 12px; }
+                .content { padding: 0 24px 32px; }
+            }
         </style>
     </head>
-    <body style="margin: 0; padding: 0;">
-        <div style="padding: 24px;">
+    <body style="margin: 0; padding: 0; background-color: #f9fafb;">
+        <div style="padding: 24px 0;">
             <div class="container">
                 <div class="header">
-                    <h1>PaskibraRent</h1>
+                    <!-- Table for better email client support on alignment -->
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td align="center">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td style="padding-right: 12px;">
+                                            <img src="${logoUrl}" alt="Logo" class="logo" width="40" height="40" style="display: block; width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                        </td>
+                                        <td>
+                                            <h1 class="title">KostumFadilyss</h1>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="content">
-                    <p class="greeting">Halo, ${name}!</p>
-                    <p class="message">Selamat datang di <strong>PaskibraRent</strong>. Kami senang Anda bergabung bersama kami.</p>
-                    <p class="message">Untuk mulai menyewa kostum dan mengakses semua fitur kami, mohon verifikasi alamat email Anda dengan mengklik tombol di bawah ini:</p>
+                    <p class="greeting">Halo, ${name}</p>
+                    <p class="message">Selamat datang! Langkah terakhir untuk mengamankan akun Anda adalah memverifikasi alamat email ini.</p>
                     
-                    <div class="button-wrapper">
-                        <a href="${verificationLink}" class="button" target="_blank">Verifikasi Akun Saya</a>
-                    </div>
+                    <a href="${verificationLink}" class="button" target="_blank">Verifikasi Sekarang</a>
                     
-                    <p class="message" style="margin-bottom: 0; font-size: 14px;">Tautan ini hanya berlaku selama <strong>24 jam</strong>.</p>
-                    
-                    <div class="link-text">
-                        <p>Jika tombol tidak berfungsi, salin tautan ini ke browser Anda:</p>
-                        <a href="${verificationLink}" style="color: #dc2626;">${verificationLink}</a>
+                    <div class="warning">
+                        Tautan ini akan kedaluwarsa dalam 24 jam.
                     </div>
                 </div>
                 <div class="footer">
-                    <p>Email ini dikirim secara otomatis oleh sistem PaskibraRent.</p>
-                    <p>&copy; ${new Date().getFullYear()} PaskibraRent. Hak cipta dilindungi.</p>
+                    <p>Jika tombol tidak berfungsi, salin tautan ini:</p>
+                    <div class="link-text" style="margin-top: 8px;">
+                        <a href="${verificationLink}">${verificationLink}</a>
+                    </div>
+                    <p style="margin-top: 24px; color: #d1d5db;">&copy; ${new Date().getFullYear()} KostumFadilyss Inc.</p>
                 </div>
             </div>
         </div>
@@ -57,3 +82,4 @@ const getVerificationEmailTemplate = (name, verificationLink) => {
 };
 
 module.exports = { getVerificationEmailTemplate };
+
