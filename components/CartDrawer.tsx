@@ -194,23 +194,27 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ items, onRemove, onUpdateQty, o
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center bg-slate-100 rounded-lg h-8">
-                          <button
-                            onClick={() => onUpdateQty(item.id, -1)}
-                            className="w-8 h-full flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded-l-lg transition-colors"
-                            disabled={item.quantity <= 1}
-                          >
-                            -
-                          </button>
-                          <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                          <button
-                            onClick={() => onUpdateQty(item.id, 1)}
-                            className="w-8 h-full flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded-r-lg transition-colors"
-                            disabled={item.quantity >= item.availableStock}
-                          >
-                            +
-                          </button>
-                        </div>
+                        {item.category === 'aksesoris' ? (
+                          <div className="flex items-center bg-slate-100 rounded-lg h-8">
+                            <button
+                              onClick={() => onUpdateQty(item.id, -1)}
+                              className="w-8 h-full flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded-l-lg transition-colors"
+                              disabled={item.quantity <= 1}
+                            >
+                              -
+                            </button>
+                            <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                            <button
+                              onClick={() => onUpdateQty(item.id, 1)}
+                              className="w-8 h-full flex items-center justify-center text-slate-600 hover:bg-slate-200 rounded-r-lg transition-colors"
+                              disabled={item.quantity >= item.availableStock}
+                            >
+                              +
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="h-8"></div> // Spacer or empty to keep layout consistent
+                        )}
                         <button
                           onClick={() => onRemove(item.id)}
                           className="text-slate-400 hover:text-red-600 transition-colors"

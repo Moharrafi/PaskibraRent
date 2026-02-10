@@ -7,14 +7,18 @@ interface CostumeCardProps {
   onAddToCart: (costume: Costume) => void;
   isInCart: boolean;
   onViewDetail?: (costume: Costume) => void;
+  bookedQty?: number;
 }
 
-const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCart, onViewDetail }) => {
+const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCart, onViewDetail, bookedQty = 0 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const effectiveStock = Math.max(0, costume.availableStock - bookedQty);
+  const isFullyBooked = effectiveStock === 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering detail view
-    if (isInCart || costume.availableStock === 0) return;
+    if (isInCart || isFullyBooked) return;
 
     setIsAnimating(true);
     // Mimic processing delay slightly for better UX feel
@@ -38,7 +42,7 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
         <img
           src={costume.image}
           alt={costume.name}
-          className={`w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 ${costume.availableStock === 0 ? 'grayscale contrast-75' : ''}`}
+          className={`w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 ${isFullyBooked ? 'grayscale contrast-75' : ''}`}
           loading="lazy"
         />
 
@@ -47,16 +51,16 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
           {costume.category}
         </div>
 
-        {/* Low Stock Indicator (< 5 but > 0) */}
-        {costume.availableStock > 0 && costume.availableStock < 5 && (
+        {/* Low Stock Indicator (< 5 but > 0) - Hidden for Fullset */}
+        {!isFullyBooked && effectiveStock < 5 && costume.category !== 'fullset' && (
           <div className="absolute bottom-3 left-3 bg-red-600 text-white pl-2 pr-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 animate-pulse border border-white/20 z-10">
             <AlertCircle size={14} className="shrink-0" />
-            <span>Segera Habis: Sisa {costume.availableStock}</span>
+            <span>Segera Habis: Sisa {effectiveStock}</span>
           </div>
         )}
 
         {/* Currently Rented / Out of Stock Overlay */}
-        {costume.availableStock === 0 && (
+        {isFullyBooked && (
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[3px] flex items-center justify-center z-20">
             <div className="bg-amber-600/90 text-white px-6 py-4 rounded-xl border border-white/20 shadow-2xl transform -rotate-2 flex flex-col items-center">
               <div className="flex items-center gap-2 mb-1">
@@ -77,7 +81,7 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
             </span>
           ))}
         </div>
-        <h3 className={`text-lg font-bold mb-2 leading-tight transition-colors ${costume.availableStock === 0 ? 'text-slate-500' : 'text-slate-900 group-hover:text-red-700'}`}>
+        <h3 className={`text-lg font-bold mb-2 leading-tight transition-colors ${isFullyBooked ? 'text-slate-500' : 'text-slate-900 group-hover:text-red-700'}`}>
           {costume.name}
         </h3>
         <p className="text-slate-500 text-sm mb-4 line-clamp-2 flex-1">{costume.description}</p>
@@ -86,7 +90,7 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
           <div className="flex items-end justify-between mb-3">
             <div className="flex flex-col">
               <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Harga Sewa</span>
-              <span className={`font-bold text-lg ${costume.availableStock === 0 ? 'text-slate-400 decoration-slate-300' : 'text-red-700'}`}>
+              <span className={`font-bold text-lg ${isFullyBooked ? 'text-slate-400 decoration-slate-300' : 'text-red-700'}`}>
                 Rp {costume.price.toLocaleString('id-ID')}
               </span>
             </div>
@@ -104,14 +108,14 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
 
             <button
               onClick={handleAddToCart}
-              disabled={isInCart || costume.availableStock === 0 || isAnimating}
+              disabled={isInCart || isFullyBooked || isAnimating}
               className={`flex-[1.5] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg font-semibold transition-all duration-300 transform ${isInCart
-                  ? 'bg-green-100 text-green-700 cursor-default'
-                  : costume.availableStock === 0
-                    ? 'bg-amber-100 text-amber-700 border border-amber-200 cursor-not-allowed'
-                    : isAnimating
-                      ? 'bg-red-800 text-white scale-95'
-                      : 'bg-slate-900 text-white hover:bg-red-700 active:scale-95 shadow-lg shadow-red-900/20'
+                ? 'bg-green-100 text-green-700 cursor-default'
+                : isFullyBooked
+                  ? 'bg-amber-100 text-amber-700 border border-amber-200 cursor-not-allowed'
+                  : isAnimating
+                    ? 'bg-red-800 text-white scale-95'
+                    : 'bg-slate-900 text-white hover:bg-red-700 active:scale-95 shadow-lg shadow-red-900/20'
                 }`}
             >
               {isInCart ? (
@@ -119,7 +123,7 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
                   <Check size={18} />
                   <span>Dipilih</span>
                 </>
-              ) : costume.availableStock === 0 ? (
+              ) : isFullyBooked ? (
                 <>
                   <Lock size={16} />
                   <span className="text-xs">Disewa Penuh</span>

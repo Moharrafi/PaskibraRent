@@ -1,0 +1,5 @@
+{
+  "name": "PaskibraRent Admin",
+  "description": "A comprehensive control panel to manage the PaskibraRent product catalog, inventory, and AI-assisted descriptions.",
+  "requestFramePermissions": []
+}

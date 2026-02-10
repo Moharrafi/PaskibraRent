@@ -34,6 +34,7 @@ const App: React.FC = () => {
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [selectedCostume, setSelectedCostume] = useState<Costume | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [availabilityMap, setAvailabilityMap] = useState<Record<string, number>>({});
 
   // User Modal States
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -83,6 +84,21 @@ const App: React.FC = () => {
     };
 
     checkAuth();
+
+    // Fetch Availability
+    const fetchAvailability = async () => {
+      try {
+        const res = await api.get('/bookings/availability');
+        const map: Record<string, number> = {};
+        res.data.forEach((item: { item_id: string, booked_qty: number }) => {
+          map[item.item_id] = item.booked_qty;
+        });
+        setAvailabilityMap(map);
+      } catch (err) {
+        console.error("Failed to fetch availability", err);
+      }
+    };
+    fetchAvailability();
   }, []);
 
   // Email Verification Logic
@@ -207,6 +223,11 @@ const App: React.FC = () => {
 
   // Cart Logic
   const addToCart = (costume: Costume) => {
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     setCart(prev => {
       const existing = prev.find(item => item.id === costume.id);
       if (existing) return prev;
@@ -579,6 +600,7 @@ const App: React.FC = () => {
                   BRAND_VALUES={BRAND_VALUES}
                   TESTIMONIALS={TESTIMONIALS}
                   COSTUMES={COSTUMES}
+                  availabilityMap={availabilityMap}
                 />
               )}
 
@@ -596,6 +618,7 @@ const App: React.FC = () => {
                   addToCart={addToCart}
                   setSelectedCostume={setSelectedCostume}
                   setView={setView}
+                  availabilityMap={availabilityMap}
                 />
               )}
 
@@ -771,6 +794,7 @@ const App: React.FC = () => {
               onClose={() => setSelectedCostume(null)}
               onAddToCart={addToCart}
               isInCart={!!cart.find(i => i.id === selectedCostume.id)}
+              bookedQty={availabilityMap[selectedCostume.id] || 0}
             />
           )
         }

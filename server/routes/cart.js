@@ -48,33 +48,19 @@ router.post('/sync', verifyToken, async (req, res) => {
         // 3. If not, insert.
         // 4. (Optional) Return full updated cart.
 
-        for (const item of items) {
-            const [existing] = await connection.query(
-                'SELECT * FROM cart_items WHERE user_id = ? AND item_id = ?',
-                [req.user.id, item.id]
+        // Efficient Bulk Insert using ON DUPLICATE KEY UPDATE
+        // MySQL supports bulk insert with ON DUPLICATE causing update
+        if (items.length > 0) {
+            const values = items.map(item => [req.user.id, item.id, item.quantity, item.rentalDays || 3]);
+
+            await connection.query(
+                `INSERT INTO cart_items (user_id, item_id, quantity, rental_days) 
+                 VALUES ? 
+                 ON DUPLICATE KEY UPDATE 
+                 quantity = VALUES(quantity), 
+                 rental_days = VALUES(rental_days)`,
+                [values]
             );
-
-            if (existing.length > 0) {
-                // Determine new quantity (e.g., replace or add? simplified: use local if newer/higher, or just replace)
-                // Let's assume sync means "add local items to server cart" or "ensure these exist"
-                // For "wishlist" behavior: ensure these are in DB.
-                // If we want to sum quantities: existing[0].quantity + item.quantity
-                // Let's just update to local quantity for now to keep it simple, or keep max.
-                // Best UX: Sum them probably? Or just take the local one as latest?
-                // Let's take local one as "latest session" overrides, but typically "Merge" is better.
-                // Let's just INSERT IGNORE or ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
-                // But simplified: just replace DB with this item's details if different.
-
-                await connection.query(
-                    'UPDATE cart_items SET quantity = ?, rental_days = ? WHERE id = ?',
-                    [item.quantity, item.rentalDays || 3, existing[0].id]
-                );
-            } else {
-                await connection.query(
-                    'INSERT INTO cart_items (user_id, item_id, quantity, rental_days) VALUES (?, ?, ?, ?)',
-                    [req.user.id, item.id, item.quantity, item.rentalDays || 3]
-                );
-            }
         }
 
         await connection.commit();
@@ -96,23 +82,15 @@ router.post('/item', verifyToken, async (req, res) => {
     const { id, quantity, rentalDays } = req.body;
 
     try {
-        // Check if exists
-        const [existing] = await pool.query(
-            'SELECT * FROM cart_items WHERE user_id = ? AND item_id = ?',
-            [req.user.id, id]
+        // Upsert Logic
+        await pool.query(
+            `INSERT INTO cart_items (user_id, item_id, quantity, rental_days) 
+             VALUES (?, ?, ?, ?) 
+             ON DUPLICATE KEY UPDATE 
+             quantity = VALUES(quantity), 
+             rental_days = VALUES(rental_days)`,
+            [req.user.id, id, quantity, rentalDays || 3]
         );
-
-        if (existing.length > 0) {
-            await pool.query(
-                'UPDATE cart_items SET quantity = ?, rental_days = ? WHERE id = ?',
-                [quantity, rentalDays || 3, existing[0].id]
-            );
-        } else {
-            await pool.query(
-                'INSERT INTO cart_items (user_id, item_id, quantity, rental_days) VALUES (?, ?, ?, ?)',
-                [req.user.id, id, quantity, rentalDays || 3]
-            );
-        }
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });

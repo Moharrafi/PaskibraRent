@@ -73,6 +73,36 @@ router.get('/my-bookings', authenticateToken, async (req, res) => {
     }
 });
 
+// GET Availability Status
+router.get('/availability', async (req, res) => {
+    try {
+        // Use application server time (Local/User System) instead of DB server time (UTC)
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        const query = `
+            SELECT bi.item_id, SUM(bi.item_qty) as booked_qty
+            FROM booking_items bi
+            JOIN bookings b ON bi.booking_id = b.id
+            WHERE 
+                b.status IN ('Menunggu', 'Konfirmasi', 'Sedang Disewa') AND
+                (
+                    (DATE_SUB(b.pickup_date, INTERVAL 10 DAY) <= ? AND b.return_date >= ?)
+                )
+            GROUP BY bi.item_id
+        `;
+
+        const [rows] = await pool.query(query, [todayStr, todayStr]);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching availability:', err);
+        res.status(500).json({ message: 'Gagal mengambil data ketersediaan' });
+    }
+});
+
 router.post('/', async (req, res) => {
     const connection = await pool.getConnection();
     try {
@@ -117,10 +147,13 @@ router.post('/', async (req, res) => {
         // 2. Insert Items
         for (const item of items) {
             await connection.query(
-                `INSERT INTO booking_items (booking_id, item_name, item_qty, item_price, item_category, item_image) VALUES (?, ?, ?, ?, ?, ?)`,
-                [bookingId, item.name, item.quantity, item.price, item.category || 'general', item.image]
+                `INSERT INTO booking_items (booking_id, item_id, item_name, item_qty, item_price, item_category, item_image) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [bookingId, item.id, item.name, item.quantity, item.price, item.category || 'general', item.image]
             );
         }
+
+        // Clear user's cart after successful booking
+        await connection.query('DELETE FROM cart_items WHERE user_id = ?', [userId]);
 
         await connection.commit();
 
@@ -224,7 +257,7 @@ router.post('/', async (req, res) => {
 
         const adminMailOptions = {
             from: `"System Notif" <${process.env.MAIL_USER}>`,
-            to: 'mohamadfadilah426@gmail.com', // Admin fixed email
+            to: 'mohamadarraafi@gmail.com', // Admin fixed email
             subject: `[ADMIN] Booking Baru #${bookingId} - ${name}`,
             html: `
             <!DOCTYPE html>

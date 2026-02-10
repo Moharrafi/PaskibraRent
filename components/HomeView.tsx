@@ -19,6 +19,7 @@ interface HomeViewProps {
     BRAND_VALUES: { text: string; icon: any }[];
     TESTIMONIALS: { text: string; author: string; role: string }[];
     COSTUMES: Costume[];
+    availabilityMap: Record<string, number>;
 }
 
 const HomeView: React.FC<HomeViewProps> = ({
@@ -32,7 +33,8 @@ const HomeView: React.FC<HomeViewProps> = ({
     setIsSizeGuideOpen,
     BRAND_VALUES,
     TESTIMONIALS,
-    COSTUMES
+    COSTUMES,
+    availabilityMap
 }) => {
     return (
         <motion.div
@@ -351,6 +353,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                                     onAddToCart={addToCart}
                                     isInCart={!!cart.find(i => i.id === costume.id)}
                                     onViewDetail={setSelectedCostume}
+                                    bookedQty={availabilityMap[costume.id] || 0}
                                 />
                             </ScrollReveal>
                         ))}

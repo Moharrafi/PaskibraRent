@@ -17,6 +17,7 @@ interface CatalogViewProps {
     addToCart: (costume: Costume) => void;
     setSelectedCostume: (costume: Costume | null) => void;
     setView: (view: ViewState) => void;
+    availabilityMap: Record<string, number>;
 }
 
 const CatalogView: React.FC<CatalogViewProps> = ({
@@ -30,7 +31,8 @@ const CatalogView: React.FC<CatalogViewProps> = ({
     cart,
     addToCart,
     setSelectedCostume,
-    setView
+    setView,
+    availabilityMap
 }) => {
     return (
         <motion.div
@@ -88,6 +90,7 @@ const CatalogView: React.FC<CatalogViewProps> = ({
                                     onAddToCart={addToCart}
                                     isInCart={!!cart.find(i => i.id === costume.id)}
                                     onViewDetail={setSelectedCostume}
+                                    bookedQty={availabilityMap[costume.id] || 0}
                                 />
                             </motion.div>
                         ))}
