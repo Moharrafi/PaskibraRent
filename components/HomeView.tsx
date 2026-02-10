@@ -416,14 +416,14 @@ const HomeView: React.FC<HomeViewProps> = ({
                         {/* Map Iframe Side */}
                         <div className="lg:col-span-2 h-[400px] lg:h-auto min-h-[400px] relative bg-slate-100">
                             <iframe
-                                src="https://maps.google.com/maps?q=Jl.+Pahlawan+No.41,+Limus+Nunggal,+Kec.+Cileungsi,+Kabupaten+Bogor,+Jawa+Barat+16820&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                src="https://maps.google.com/maps?q=-6.365256,106.97482&hl=es;z=14&output=embed"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
                                 allowFullScreen
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
-                                className="absolute inset-0 transition-all duration-700"
+                                className="absolute inset-0 transition-all duration-700 gray-0 hover:gray-0"
                                 title="Lokasi Store KostumFadilyss"
                             ></iframe>
                         </div>

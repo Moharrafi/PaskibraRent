@@ -257,7 +257,7 @@ router.post('/', async (req, res) => {
 
         const adminMailOptions = {
             from: `"System Notif" <${process.env.MAIL_USER}>`,
-            to: 'mohamadarraafi@gmail.com', // Admin fixed email
+            to: 'mohamadfadilah426@gmail.com', // Admin fixed email
             subject: `[ADMIN] Booking Baru #${bookingId} - ${name}`,
             html: `
             <!DOCTYPE html>

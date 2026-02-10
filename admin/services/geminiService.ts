@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Category } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export interface AISuggestion {
   description: string;
@@ -53,7 +53,7 @@ export const generateProductContent = async (
 
     const text = response.text;
     if (!text) throw new Error("No response from AI");
-    
+
     // Default values if AI misses something
     const parsed = JSON.parse(text);
     return {

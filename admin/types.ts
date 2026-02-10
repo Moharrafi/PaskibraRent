@@ -1,10 +1,6 @@
 export enum Category {
-  UNIFORM = 'Seragam (PDU/PDH)',
-  ACCESSORIES = 'Aksesoris',
-  FLAGS = 'Bendera & Pataka',
-  EQUIPMENT = 'Perlengkapan Latihan',
-  MUSICAL = 'Alat Musik/Drumband',
-  OTHER = 'Lainnya'
+  FULLSET = 'fullset',
+  ACCESSORIES = 'aksesoris'
 }
 
 export interface Product {

@@ -14,7 +14,7 @@ const COMMON_SIZES = ['S', 'M', 'L', 'XL', 'XXL', '3XL', 'Custom'];
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel }) => {
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
-    category: Category.UNIFORM,
+    category: Category.FULLSET,
     price: 0,
     rentalDuration: 3,
     stock: 0,
@@ -24,7 +24,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
     packageContents: [],
     imageUrls: []
   });
-  
+
   const [newContentItem, setNewContentItem] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -119,7 +119,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
 
   const handleAiGenerate = async () => {
     if (!formData.name) return alert('Mohon isi nama produk terlebih dahulu.');
-    
+
     setIsGenerating(true);
     try {
       const suggestion = await generateProductContent(formData.name!, formData.category as Category);
@@ -161,7 +161,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
       {/* Container utama menggunakan Flexbox dan overflow-hidden */}
       <div className="bg-white w-full max-w-5xl max-h-[90vh] flex flex-col border border-slate-200 rounded-[2.5rem] shadow-2xl overflow-hidden">
-        
+
         {/* Header - Fixed */}
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100 bg-white shrink-0 z-20">
           <div>
@@ -177,47 +177,47 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
 
         {/* Form sebagai flex container untuk body dan footer */}
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          
+
           {/* Scrollable Content Body */}
           <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-10 custom-scrollbar">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-              
+
               {/* Left Column: Image Gallery */}
               <div className="lg:col-span-4 space-y-4">
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Galeri Produk</label>
-                
+
                 <div className="aspect-[3/4] w-full bg-slate-50 border border-slate-200 relative group rounded-3xl overflow-hidden">
                   {currentImages.length > 0 ? (
                     <>
                       <img src={currentImages[selectedImageIndex]} alt="Preview" className="w-full h-full object-cover" />
                       <div className="absolute inset-x-0 bottom-0 p-4 bg-white/90 backdrop-blur border-t border-slate-100 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                          {selectedImageIndex !== 0 && (
-                            <button 
-                              type="button" 
-                              onClick={() => handleSetCover(selectedImageIndex)}
-                              className="flex-1 bg-slate-900 text-white py-2.5 px-4 text-xs font-bold hover:bg-slate-800 rounded-xl"
-                            >
-                              Jadikan Cover
-                            </button>
-                          )}
-                           <button 
-                              type="button" 
-                              onClick={() => handleRemoveImage(selectedImageIndex)}
-                              className="bg-red-50 hover:bg-red-100 text-red-600 p-2.5 rounded-xl transition-colors"
-                            >
-                              <Trash size={18} />
-                            </button>
+                        {selectedImageIndex !== 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleSetCover(selectedImageIndex)}
+                            className="flex-1 bg-slate-900 text-white py-2.5 px-4 text-xs font-bold hover:bg-slate-800 rounded-xl"
+                          >
+                            Jadikan Cover
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(selectedImageIndex)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 p-2.5 rounded-xl transition-colors"
+                        >
+                          <Trash size={18} />
+                        </button>
                       </div>
                       {selectedImageIndex === 0 && (
-                         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-slate-900 text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider rounded-full shadow-sm border border-white">
-                           Cover Utama
-                         </div>
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-slate-900 text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider rounded-full shadow-sm border border-white">
+                          Cover Utama
+                        </div>
                       )}
                     </>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-3">
                       <div className="bg-white p-4 rounded-full shadow-sm">
-                         <ImageIcon size={32} />
+                        <ImageIcon size={32} />
                       </div>
                       <span className="text-xs font-medium">Belum ada foto</span>
                     </div>
@@ -230,43 +230,41 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                       key={idx}
                       type="button"
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`aspect-square border-2 transition-all rounded-2xl overflow-hidden ${
-                        idx === selectedImageIndex ? 'border-red-500 opacity-100 scale-95' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105'
-                      }`}
+                      className={`aspect-square border-2 transition-all rounded-2xl overflow-hidden ${idx === selectedImageIndex ? 'border-red-500 opacity-100 scale-95' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105'
+                        }`}
                     >
                       <img src={url} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
                     </button>
                   ))}
-                  
+
                   <label className="aspect-square border-2 border-dashed border-slate-200 hover:border-red-400 hover:bg-red-50 cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-red-500 transition-all rounded-2xl group">
                     <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                     <Upload size={20} className="group-hover:scale-110 transition-transform" />
                   </label>
-                  
+
                   <button
-                      type="button"
-                      onClick={handleAddImage}
-                      className="aspect-square border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-blue-500 transition-all rounded-2xl group"
-                    >
-                      <Plus size={20} className="group-hover:scale-110 transition-transform" />
-                    </button>
+                    type="button"
+                    onClick={handleAddImage}
+                    className="aspect-square border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-blue-500 transition-all rounded-2xl group"
+                  >
+                    <Plus size={20} className="group-hover:scale-110 transition-transform" />
+                  </button>
                 </div>
               </div>
 
               {/* Right Column: Form Fields */}
               <div className="lg:col-span-8 space-y-8">
-                
+
                 <div className="flex justify-between items-center">
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Informasi Dasar</h3>
                   <button
                     type="button"
                     onClick={handleAiGenerate}
                     disabled={isGenerating || !formData.name}
-                    className={`text-xs flex items-center gap-2 px-4 py-2 border transition-all font-medium rounded-full ${
-                      isGenerating || !formData.name
-                        ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed'
-                        : 'bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300'
-                    }`}
+                    className={`text-xs flex items-center gap-2 px-4 py-2 border transition-all font-medium rounded-full ${isGenerating || !formData.name
+                      ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed'
+                      : 'bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300'
+                      }`}
                   >
                     {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                     Auto-Fill AI
@@ -302,7 +300,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                           ))}
                         </select>
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </div>
                       </div>
                     </div>
@@ -320,28 +318,33 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                   </div>
 
                   <div className="grid grid-cols-2 gap-6 p-6 bg-slate-50 border border-slate-100 rounded-3xl">
-                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-2 ml-1">Harga Sewa (Rp)</label>
-                        <input
-                          type="number"
-                          name="price"
-                          value={formData.price}
-                          onChange={handleChange}
-                          className="w-full px-5 py-3 bg-white border border-slate-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-200 outline-none font-bold text-slate-900 rounded-2xl"
-                          min="0"
-                        />
-                     </div>
-                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-2 ml-1">Durasi (Hari)</label>
-                        <input
-                          type="number"
-                          name="rentalDuration"
-                          value={formData.rentalDuration}
-                          onChange={handleChange}
-                          className="w-full px-5 py-3 bg-white border border-slate-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-200 outline-none font-bold text-slate-900 rounded-2xl"
-                          min="1"
-                        />
-                     </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-2 ml-1">Harga Sewa (Rp)</label>
+                      <input
+                        type="text"
+                        name="price"
+                        value={formData.price ? Number(formData.price).toLocaleString('id-ID') : ''}
+                        onChange={(e) => {
+                          const rawValue = e.target.value.replace(/\./g, '');
+                          if (!isNaN(Number(rawValue))) {
+                            setFormData(prev => ({ ...prev, price: Number(rawValue) }));
+                          }
+                        }}
+                        className="w-full px-5 py-3 bg-white border border-slate-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-200 outline-none font-bold text-slate-900 rounded-2xl"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-2 ml-1">Durasi (Hari)</label>
+                      <input
+                        type="number"
+                        name="rentalDuration"
+                        value={formData.rentalDuration}
+                        onChange={handleChange}
+                        className="w-full px-5 py-3 bg-white border border-slate-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-200 outline-none font-bold text-slate-900 rounded-2xl"
+                        min="1"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -380,11 +383,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                               key={size}
                               type="button"
                               onClick={() => handleSizeToggle(size)}
-                              className={`w-10 h-10 flex items-center justify-center text-xs font-bold border transition-all rounded-full ${
-                                formData.sizes?.includes(size)
-                                  ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105'
-                                  : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
-                              }`}
+                              className={`w-10 h-10 flex items-center justify-center text-xs font-bold border transition-all rounded-full ${formData.sizes?.includes(size)
+                                ? 'bg-slate-900 text-white border-slate-900 shadow-md transform scale-105'
+                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                }`}
                             >
                               {size}
                             </button>
@@ -394,50 +396,50 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                     </div>
 
                     <div>
-                       <label className="block text-xs font-bold text-slate-400 mb-2 ml-1">Isi Paket</label>
-                       <div className="border border-slate-200 bg-white rounded-3xl overflow-hidden p-2">
-                         <div className="space-y-1 max-h-[160px] overflow-y-auto px-1 py-1 custom-scrollbar">
-                           {formData.packageContents?.map((item, idx) => (
-                             <div key={idx} className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl group">
-                               <div className="flex items-center gap-3">
-                                 <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-                                   <Check size={10} strokeWidth={4} />
-                                 </div>
-                                 <span className="text-sm font-medium text-slate-700">{item}</span>
-                               </div>
-                               <button 
-                                 type="button"
-                                 onClick={() => handleRemoveContent(idx)}
-                                 className="text-slate-300 hover:text-red-500 transition-colors p-1"
-                               >
-                                 <Trash size={14} />
-                               </button>
-                             </div>
-                           ))}
-                           {(!formData.packageContents || formData.packageContents.length === 0) && (
-                             <div className="py-6 text-center text-slate-400 text-sm">
-                               Belum ada item ditambahkan
-                             </div>
-                           )}
-                         </div>
-                         <div className="mt-2 flex gap-2">
-                           <input 
-                             type="text" 
-                             value={newContentItem}
-                             onChange={(e) => setNewContentItem(e.target.value)}
-                             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddContent())}
-                             className="flex-1 px-5 py-3 text-sm bg-slate-50 border border-slate-200 focus:border-slate-400 outline-none rounded-full"
-                             placeholder="Tambah item..."
-                           />
-                           <button 
-                             type="button"
-                             onClick={handleAddContent}
-                             className="bg-slate-900 text-white w-11 h-11 flex items-center justify-center hover:bg-slate-800 rounded-full shadow-lg"
-                           >
-                             <Plus size={20} />
-                           </button>
-                         </div>
-                       </div>
+                      <label className="block text-xs font-bold text-slate-400 mb-2 ml-1">Isi Paket</label>
+                      <div className="border border-slate-200 bg-white rounded-3xl overflow-hidden p-2">
+                        <div className="space-y-1 max-h-[160px] overflow-y-auto px-1 py-1 custom-scrollbar">
+                          {formData.packageContents?.map((item, idx) => (
+                            <div key={idx} className="flex items-center justify-between px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl group">
+                              <div className="flex items-center gap-3">
+                                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                  <Check size={10} strokeWidth={4} />
+                                </div>
+                                <span className="text-sm font-medium text-slate-700">{item}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveContent(idx)}
+                                className="text-slate-300 hover:text-red-500 transition-colors p-1"
+                              >
+                                <Trash size={14} />
+                              </button>
+                            </div>
+                          ))}
+                          {(!formData.packageContents || formData.packageContents.length === 0) && (
+                            <div className="py-6 text-center text-slate-400 text-sm">
+                              Belum ada item ditambahkan
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-2 flex gap-2">
+                          <input
+                            type="text"
+                            value={newContentItem}
+                            onChange={(e) => setNewContentItem(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddContent())}
+                            className="flex-1 px-5 py-3 text-sm bg-slate-50 border border-slate-200 focus:border-slate-400 outline-none rounded-full"
+                            placeholder="Tambah item..."
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddContent}
+                            className="bg-slate-900 text-white w-11 h-11 flex items-center justify-center hover:bg-slate-800 rounded-full shadow-lg"
+                          >
+                            <Plus size={20} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

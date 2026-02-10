@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, User, Mail, Save, Clock, CheckCircle, AlertCircle, Lock, Calendar, ChevronRight, Package, Loader2, ArrowLeft, FileText, MapPin, Phone, Printer, ShieldCheck, Repeat, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User as UserType } from '../types';
-import { APP_NAME, COSTUMES } from '../constants';
+import { APP_NAME } from '../constants';
 
 // --- Shared Modal Wrapper ---
 const ModalWrapper: React.FC<{
@@ -162,9 +162,10 @@ interface RentalHistoryModalProps {
     onClose: () => void;
     user: UserType | null;
     onRentAgain: (items: any[]) => void;
+    costumes: any[]; // Costume[] but avoiding circular dependency issues if any
 }
 
-export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, onClose, user, onRentAgain }) => {
+export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, onClose, user, onRentAgain, costumes }) => {
     const [history, setHistory] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedTrx, setSelectedTrx] = useState<any | null>(null);
@@ -218,13 +219,6 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                 .finally(() => setIsLoading(false));
         }
     }, [isOpen, user]);
-
-    // Helper to parse "15 Feb 2024" to Date object
-    const parseLocaleDate = (dateStr: string) => {
-        // This is a rough parser for the display format "20 Feb 2024"
-        // Better to use rawDate from the mapped object for filtering
-        return new Date(dateStr);
-    };
 
     // Filter Logic
     const filteredHistory = history.filter(item => {
@@ -382,8 +376,8 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
 
         // Convert details to array for the handler
         const itemsToRent = selectedTrx.details.map((detail: any) => {
-            // Try to find matching costume from constants to get full data (category, id, etc)
-            const matchedCostume = COSTUMES.find(c => c.name === detail.name); // This name match might be fragile if names change
+            // Try to find matching costume from props to get full data (category, id, etc)
+            const matchedCostume = costumes.find(c => c.name === detail.name); // This name match might be fragile if names change
             if (matchedCostume) {
                 return {
                     ...matchedCostume,

@@ -86,4 +86,37 @@ export const cartService = {
     }
 };
 
+export const productService = {
+    getProducts: async () => {
+        const response = await api.get('/products');
+        // Map backend snake_case/different names to frontend Costume interface
+        return response.data.map((item: any) => ({
+            id: String(item.id),
+            name: item.name,
+            category: item.category,
+            price: Number(item.price),
+            // Use first image from array or fallback
+            image: (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : (item.image_urls ? JSON.parse(item.image_urls)[0] : '/images/placeholder.jpg'),
+            images: item.imageUrls || (item.image_urls ? JSON.parse(item.image_urls) : []),
+            description: item.description,
+            tags: item.tags || [],
+            availableStock: item.stock,
+            material: item.material,
+            sizes: item.sizes || [],
+            includedItems: item.packageContents || []
+        }));
+    },
+    getProductById: async (id: string) => {
+        const response = await api.get(`/products/${id}`);
+        return response.data;
+    }
+};
+
+export const galleryService = {
+    getGallery: async () => {
+        const response = await api.get('/gallery');
+        return response.data;
+    }
+};
+
 export default api;

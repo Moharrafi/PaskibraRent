@@ -1,94 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Camera } from 'lucide-react';
 import { APP_NAME } from '../constants';
+import { galleryService } from '../services/api';
 
-const galleryItems = [
-  {
-    id: 1,
-    image: '/images/1.jpeg',
-    title: 'Hormat Sang Merah Putih',
-    school: 'SMAN 3 Depok',
-    category: 'Upacara',
-    size: 'large'
-  },
-  {
-    id: 2,
-    image: '/images/WhatsApp Image 2026-02-05 at 21.18.04.jpeg',
-    title: 'Pasukan Variasi Emas',
-    school: 'SMAN 5 Depok',
-    category: 'Lomba',
-    size: 'small'
-  },
-  {
-    id: 3,
-    image: '/images/ww.jpeg',
-    title: 'Komandan Pasukan',
-    school: 'Purna Paskibraka',
-    category: 'Formal',
-    size: 'medium'
-  },
-  {
-    id: 4,
-    image: '/images/tt.jpeg',
-    title: 'Formasi Siap Sedia',
-    school: 'Madya Bank',
-    category: 'Lomba',
-    size: 'small'
-  },
-  {
-    id: 5,
-    image: '/images/WhatsApp Image 2026-02-05 at 21.10.12.jpeg',
-    title: 'Semangat Kemerdekaan',
-    school: 'Satya Adhikarta',
-    category: 'Event',
-    size: 'medium'
-  },
-  {
-    id: 6,
-    image: '/images/WhatsApp Image 2026-02-05 at 21.19.08.jpeg',
-    title: 'Tampil Prima Malam Hari',
-    school: 'SMAN 5 Depok',
-    category: 'Lomba',
-    size: 'large'
-  },
-  {
-    id: 7,
-    image: '/images/WhatsApp Image 2026-02-05 at 21.10.11.jpeg',
-    title: 'Lerap Langkah Tegap',
-    school: 'SMKN 1',
-    category: 'Lomba',
-    size: 'medium'
-  },
-  {
-    id: 8,
-    image: '/images/qq.jpeg',
-    title: 'Komandan Upacara',
-    school: 'SMA Nasional',
-    category: 'Formal',
-    size: 'small'
-  },
-  {
-    id: 9,
-    image: '/images/WhatsApp Image 2026-02-05 at 21.16.59.jpeg',
-    title: 'Srikandi Tangguh',
-    school: 'SMK Pertiwi',
-    category: 'Lomba',
-    size: 'large'
-  },
-  {
-    id: 10,
-    image: '/images/WhatsApp Image 2026-02-05 at 21.17.00.jpeg',
-    title: 'Kekompakan Pasukan',
-    school: 'Madya Bank',
-    category: 'Lomba',
-    size: 'medium'
-  }
-];
+interface GalleryItem {
+  id: number;
+  title: string;
+  image_url: string;
+  date: string;
+  location: string;
+}
 
 import SEO from './SEO';
 
 const GalleryPage: React.FC = () => {
+  const [items, setItems] = useState<GalleryItem[]>([]);
+
+  useEffect(() => {
+    galleryService.getGallery().then(data => {
+      setItems(data);
+    }).catch(console.error);
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <SEO
@@ -111,7 +45,7 @@ const GalleryPage: React.FC = () => {
       {/* Gallery Grid */}
       <div className="container mx-auto px-4 py-16">
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {galleryItems.map((item, idx) => (
+          {items.map((item, idx) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 50 }}
@@ -122,19 +56,19 @@ const GalleryPage: React.FC = () => {
             >
               <div className="relative overflow-hidden">
                 <img
-                  src={item.image}
+                  src={item.image_url}
                   alt={item.title}
                   className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-700"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  <span className="inline-block bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded mb-2 w-fit">
-                    {item.category}
-                  </span>
                   <h3 className="text-white font-bold text-lg leading-tight mb-1">{item.title}</h3>
                   <div className="flex items-center gap-2 text-slate-300 text-xs">
                     <MapPin size={12} />
-                    <span>{item.school}</span>
+                    <span>{item.location || 'Lokasi tidak tersedia'}</span>
+                  </div>
+                  <div className="text-slate-400 text-xs mt-1">
+                    {item.date && new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
                 </div>
               </div>

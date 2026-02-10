@@ -1,9 +1,10 @@
 export interface Costume {
   id: string;
   name: string;
-  category: 'pria' | 'wanita' | 'aksesoris' | 'fullset';
+  category: 'fullset' | 'aksesoris';
   price: number;
   image: string;
+  images: string[];
   description: string;
   tags: string[];
   availableStock: number;

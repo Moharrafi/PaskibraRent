@@ -20,9 +20,10 @@ const CostumeDetailModal: React.FC<CostumeDetailModalProps> = ({
   isInCart,
   bookedQty = 0
 }) => {
-  // Simulate a gallery since we currently only have 1 image in the data structure
-  // In a real app, this would come from costume.galleryImages
-  const galleryImages = [costume.image, costume.image, costume.image];
+  // Use real gallery images if available, otherwise fallback or simulate
+  const galleryImages = (costume.images && costume.images.length > 0)
+    ? costume.images
+    : [costume.image, costume.image, costume.image].filter(Boolean);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -177,7 +178,7 @@ const CostumeDetailModal: React.FC<CostumeDetailModalProps> = ({
                 <div>
                   <h4 className="font-bold text-slate-900 text-sm">Ukuran</h4>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {costume.sizes.map(s => (
+                    {(costume.sizes || []).map(s => (
                       <span key={s} className="text-[10px] font-bold bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-600">{s}</span>
                     ))}
                   </div>
@@ -190,7 +191,7 @@ const CostumeDetailModal: React.FC<CostumeDetailModalProps> = ({
                   <h4 className="font-bold text-slate-900 text-sm">Kelengkapan Paket</h4>
                 </div>
                 <ul className="grid grid-cols-2 gap-2">
-                  {costume.includedItems.map((item, i) => (
+                  {(costume.includedItems || []).map((item, i) => (
                     <li key={i} className="flex items-center gap-2 text-xs text-slate-600">
                       <Check size={12} className="text-green-600 shrink-0" /> {item}
                     </li>
