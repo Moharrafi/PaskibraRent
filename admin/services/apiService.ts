@@ -65,5 +65,11 @@ export const apiService = {
             lowStockCount: products.filter(p => p.stock < 10).length,
             categoriesCount: new Set(products.map(p => p.category)).size
         };
+    },
+
+    // Broadcast
+    sendBroadcast: async (subject: string, message: string, imageUrl?: string): Promise<any> => {
+        const response = await api.post('/newsletter/broadcast', { subject, message, imageUrl });
+        return response.data;
     }
 };

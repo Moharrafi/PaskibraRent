@@ -55,6 +55,8 @@ const HomeView: React.FC<HomeViewProps> = ({
                         src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
                         alt="Hero Background"
                         className="w-full h-full object-cover object-center"
+                        fetchPriority="high"
+                        loading="eager"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-slate-950/30 mix-blend-multiply"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>

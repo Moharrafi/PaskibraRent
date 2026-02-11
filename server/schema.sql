@@ -73,6 +73,12 @@ CREATE TABLE IF NOT EXISTS gallery (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Seed Data for Products (from constants.ts)
 INSERT INTO products (name, category, price, rental_duration, stock, description, image_urls, material, tags, package_contents, sizes)
 SELECT * FROM (SELECT 

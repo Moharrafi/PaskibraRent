@@ -19,6 +19,7 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/cart', require('./routes/cart'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/newsletter', require('./routes/newsletter'));
 
 // Test Database Connection
 // Test Database Connection

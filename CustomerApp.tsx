@@ -45,6 +45,27 @@ const CustomerApp: React.FC = () => {
   const [isMobileProfileOpen, setIsMobileProfileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<'IDLE' | 'VERIFYING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  /* New Newsletter State */
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'>('IDLE');
+
+  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+
+    setNewsletterStatus('LOADING');
+    try {
+      await api.post('/newsletter', { email: newsletterEmail });
+      setNewsletterStatus('SUCCESS');
+      setNewsletterEmail('');
+      setTimeout(() => setNewsletterStatus('IDLE'), 3000);
+    } catch (err) {
+      console.error('Newsletter failed:', err);
+      setNewsletterStatus('ERROR');
+      setTimeout(() => setNewsletterStatus('IDLE'), 3000);
+    }
+  };
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -385,6 +406,26 @@ const CustomerApp: React.FC = () => {
               </motion.div>
             </div>
           )}
+          {newsletterStatus !== 'IDLE' && newsletterStatus !== 'LOADING' && (
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3"
+            >
+              {newsletterStatus === 'SUCCESS' ? (
+                <>
+                  <CheckCircle className="text-green-500" size={20} />
+                  <span className="font-medium">Berhasil berlangganan!</span>
+                </>
+              ) : (
+                <>
+                  <XCircle className="text-red-500" size={20} />
+                  <span className="font-medium">Gagal berlangganan. Coba lagi.</span>
+                </>
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Navigation */}
@@ -592,38 +633,44 @@ const CustomerApp: React.FC = () => {
 
         {/* Main Content Area */}
         <main className="flex-1">
+          {/* User Modals - Moved outside AnimatePresence to prevent page transitions/unmounting */}
+          <AnimatePresence>
+            {activeUserModal === 'PROFILE' && user ? (
+              <UserProfileModal
+                key="profile-modal"
+                isOpen={true}
+                onClose={() => setActiveUserModal(null)}
+                user={user}
+                onUpdate={handleUpdateProfile}
+              />
+            ) : activeUserModal === 'HISTORY' ? (
+              <RentalHistoryModal
+                key="history-modal"
+                isOpen={true}
+                onClose={() => setActiveUserModal(null)}
+                user={user}
+                onRentAgain={handleRentAgainFromHistory}
+                costumes={costumes}
+              />
+            ) : activeUserModal === 'PASSWORD' ? (
+              <ChangePasswordModal
+                key="password-modal"
+                isOpen={true}
+                onClose={() => setActiveUserModal(null)}
+              />
+            ) : null}
+          </AnimatePresence>
+
           <Suspense fallback={
             <div className="flex items-center justify-center min-h-[400px]">
               <Loader2 className="animate-spin text-red-600 w-10 h-10" />
             </div>
           }>
             <AnimatePresence mode="wait">
-              {/* User Modals */}
-              {activeUserModal === 'PROFILE' && user ? (
-                <UserProfileModal
-                  isOpen={true}
-                  onClose={() => setActiveUserModal(null)}
-                  user={user}
-                  onUpdate={handleUpdateProfile}
-                />
-              ) : activeUserModal === 'HISTORY' ? (
-                <RentalHistoryModal
-                  isOpen={true}
-                  onClose={() => setActiveUserModal(null)}
-                  user={user}
-                  onRentAgain={handleRentAgainFromHistory}
-                  costumes={costumes}
-                />
-              ) : activeUserModal === 'PASSWORD' ? (
-                <ChangePasswordModal
-                  isOpen={true}
-                  onClose={() => setActiveUserModal(null)}
-                />
-              ) : null}
-
               {/* VIEW: HOME */}
               {view === 'HOME' && (
                 <HomeView
+                  key="home"
                   setView={setView}
                   pageVariants={pageVariants}
                   setFilterCategory={setFilterCategory}
@@ -642,6 +689,7 @@ const CustomerApp: React.FC = () => {
               {/* VIEW: CATALOG */}
               {view === 'CATALOG' && (
                 <CatalogView
+                  key="catalog"
                   pageVariants={pageVariants}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
@@ -670,6 +718,7 @@ const CustomerApp: React.FC = () => {
               {/* VIEW: SUCCESS */}
               {view === 'SUCCESS' && (
                 <SuccessView
+                  key="success"
                   lastBooking={lastBooking}
                   openWhatsApp={openWhatsApp}
                   handleRentAgain={handleRentAgain}
@@ -739,16 +788,23 @@ const CustomerApp: React.FC = () => {
               <div>
                 <h4 className="font-bold text-lg mb-6 text-white border-l-4 border-red-600 pl-3">Newsletter</h4>
                 <p className="text-slate-400 text-sm mb-4">Dapatkan info promo dan tips perawatan seragam terbaru.</p>
-                <div className="relative">
+                <form onSubmit={handleNewsletterSubscribe} className="relative">
                   <input
                     type="email"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
                     placeholder="Email Anda"
+                    required
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
                   />
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-red-600 rounded-lg text-white hover:bg-red-700 transition-colors">
-                    <ArrowRight size={16} />
+                  <button
+                    disabled={newsletterStatus === 'LOADING'}
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-red-600 rounded-lg text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {newsletterStatus === 'LOADING' ? <Loader2 className="animate-spin" size={16} /> : <ArrowRight size={16} />}
                   </button>
-                </div>
+                </form>
                 <p className="text-xs text-slate-600 mt-3">Kami tidak akan mengirim spam.</p>
               </div>
             </div>

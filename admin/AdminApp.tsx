@@ -6,6 +6,7 @@ import RevenueChart from './components/RevenueChart';
 import SettingsView from './components/SettingsView';
 import LoginView from './components/LoginView';
 import GalleryView from './components/GalleryView';
+import BroadcastView from './components/BroadcastView';
 import Toast from './components/Toast';
 import { Product, Category, ChartData, AppSettings } from './types';
 import * as storage from './services/storageService'; // Keep for auth and settings for now
@@ -30,7 +31,7 @@ const AdminApp: React.FC = () => {
     type: 'success'
   });
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'settings' | 'gallery'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast'>('dashboard');
   const [products, setProducts] = useState<Product[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
@@ -196,12 +197,14 @@ const AdminApp: React.FC = () => {
                   {activeTab === 'inventory' && 'Katalog Produk'}
                   {activeTab === 'settings' && 'Pengaturan Sistem'}
                   {activeTab === 'gallery' && 'Galeri Foto'}
+                  {activeTab === 'broadcast' && 'Broadcast Newsletter'}
                 </h1>
                 <p className="text-slate-500 mt-1 text-sm">
                   {activeTab === 'dashboard' && 'Ringkasan aktivitas dan performa toko.'}
                   {activeTab === 'inventory' && 'Kelola inventaris, stok, dan harga sewa.'}
                   {activeTab === 'settings' && 'Konfigurasi aplikasi dan profil admin.'}
                   {activeTab === 'gallery' && 'Kelola dokumentasi kegiatan Paskibra.'}
+                  {activeTab === 'broadcast' && 'Kirim pesan update ke semua pelanggan newsletter.'}
                 </p>
               </div>
 
@@ -479,6 +482,13 @@ const AdminApp: React.FC = () => {
             {activeTab === 'gallery' && (
               <div className="animate-fade-in">
                 <GalleryView onShowToast={showToast} />
+              </div>
+            )}
+
+            {/* Broadcast View */}
+            {activeTab === 'broadcast' && (
+              <div className="animate-fade-in">
+                <BroadcastView onShowToast={showToast} />
               </div>
             )}
 

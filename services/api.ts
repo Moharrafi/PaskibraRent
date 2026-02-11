@@ -119,4 +119,11 @@ export const galleryService = {
     }
 };
 
+export const newsletterService = {
+    subscribe: async (email: string) => {
+        const response = await api.post('/newsletter', { email });
+        return response.data;
+    }
+};
+
 export default api;

@@ -1,28 +1,28 @@
 import React from 'react';
-import { LayoutDashboard, Package, Settings, LogOut, Flag, Image, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Package, Settings, LogOut, Flag, Image, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 
 interface SidebarProps {
-  activeTab: 'dashboard' | 'inventory' | 'settings' | 'gallery';
-  onTabChange: (tab: 'dashboard' | 'inventory' | 'settings' | 'gallery') => void;
+  activeTab: 'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast';
+  onTabChange: (tab: 'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast') => void;
   isOpen: boolean;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   onLogout: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  activeTab, 
-  onTabChange, 
-  isOpen, 
-  isCollapsed, 
-  onToggleCollapse, 
-  onLogout 
+const Sidebar: React.FC<SidebarProps> = ({
+  activeTab,
+  onTabChange,
+  isOpen,
+  isCollapsed,
+  onToggleCollapse,
+  onLogout
 }) => {
   const navItemClass = (isActive: boolean) => `
     flex items-center gap-3 px-3 py-3.5 rounded-2xl transition-all duration-200 font-medium text-sm mb-1
     ${isCollapsed ? 'justify-center w-12 mx-auto' : 'w-full'}
-    ${isActive 
-      ? 'bg-red-600 text-white shadow-sm' 
+    ${isActive
+      ? 'bg-red-600 text-white shadow-sm'
       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
     }
   `;
@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1.5 font-semibold truncate">Admin Panel</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={onToggleCollapse}
               className="hidden md:flex w-8 h-8 items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors shrink-0"
             >
@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </>
         ) : (
-          <button 
+          <button
             onClick={onToggleCollapse}
             className="hidden md:flex w-10 h-10 items-center justify-center rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
           >
@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <LayoutDashboard size={20} className="shrink-0" />
           {!isCollapsed && <span>Dashboard</span>}
         </button>
-        
+
         <button
           onClick={() => onTabChange('inventory')}
           className={navItemClass(activeTab === 'inventory')}
@@ -93,6 +93,15 @@ const Sidebar: React.FC<SidebarProps> = ({
           {!isCollapsed && <span>Galeri Foto</span>}
         </button>
 
+        <button
+          onClick={() => onTabChange('broadcast')}
+          className={navItemClass(activeTab === 'broadcast')}
+          title={isCollapsed ? "Broadcast" : ""}
+        >
+          <Send size={20} className="shrink-0" />
+          {!isCollapsed && <span>Broadcast</span>}
+        </button>
+
         {!isCollapsed && (
           <div className="pt-8 pb-3 px-2">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pengaturan</p>
@@ -100,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
         {isCollapsed && <div className="h-4"></div>}
 
-        <button 
+        <button
           onClick={() => onTabChange('settings')}
           className={navItemClass(activeTab === 'settings')}
           title={isCollapsed ? "Sistem" : ""}
@@ -112,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Footer / Logout */}
       <div className="p-4 shrink-0 border-t border-slate-800/50">
-        <button 
+        <button
           onClick={onLogout}
           className={`flex items-center gap-3 px-3 py-3.5 rounded-2xl text-slate-400 hover:bg-slate-800 hover:text-white transition-colors text-sm font-medium border border-slate-800 hover:border-slate-700 group ${isCollapsed ? 'justify-center w-12 mx-auto' : 'w-full'}`}
           title={isCollapsed ? "Keluar" : ""}
