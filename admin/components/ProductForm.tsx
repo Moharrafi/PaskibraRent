@@ -164,7 +164,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
               {/* Left Column: Image Gallery */}
-              <div className="lg:col-span-4 space-y-4">
+              <div className="lg:col-span-4 space-y-4 w-full max-w-sm mx-auto lg:max-w-none">
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Galeri Produk</label>
 
                 <div className="aspect-[3/4] w-full bg-slate-50 border border-slate-200 relative group rounded-3xl overflow-hidden">

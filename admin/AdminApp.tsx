@@ -38,6 +38,7 @@ const AdminApp: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
   // Stats Data
   const [revenueData, setRevenueData] = useState<ChartData[]>([]);
@@ -176,10 +177,10 @@ const AdminApp: React.FC = () => {
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-100 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="bg-red-600 p-1.5 rounded-lg">
-              <Flag size={16} className="text-white fill-current" />
+            <div className="shrink-0">
+              <img src="/images/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
             </div>
-            <span className="font-bold text-slate-900">PaskibraRent</span>
+            <span className="font-bold text-slate-900">KostumFadilyss</span>
           </div>
           <button onClick={() => setSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg">
             <Menu size={24} />
@@ -276,17 +277,49 @@ const AdminApp: React.FC = () => {
 
                   <div className="flex w-full md:w-auto gap-3">
                     <div className="relative flex-1 md:flex-none">
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="w-full appearance-none pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl focus:border-slate-400 outline-none text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors"
+                      <button
+                        onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                        className="w-full md:w-48 appearance-none pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl focus:border-red-500 outline-none text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-50 transition-all flex items-center justify-between shadow-sm relative group"
                       >
-                        <option value="All">Semua Kategori</option>
-                        {Object.values(Category).map(cat => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-                      <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                        <span className="truncate">{selectedCategory === 'All' ? 'Semua Kategori' : selectedCategory}</span>
+                        <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-red-500 transition-colors" size={16} />
+                      </button>
+
+                      {isCategoryDropdownOpen && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-20 cursor-default"
+                            onClick={() => setIsCategoryDropdownOpen(false)}
+                          />
+                          <div className="absolute right-0 top-full mt-2 w-full md:w-56 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-30 animate-in fade-in zoom-in-95 duration-200 origin-top-right ring-1 ring-black/5">
+                            <div className="max-h-60 overflow-y-auto custom-scrollbar p-1.5 space-y-0.5">
+                              <button
+                                onClick={() => {
+                                  setSelectedCategory('All');
+                                  setIsCategoryDropdownOpen(false);
+                                }}
+                                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-between group ${selectedCategory === 'All' ? 'bg-red-50 text-red-600' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}`}
+                              >
+                                Semua Kategori
+                                {selectedCategory === 'All' && <Check size={14} className="text-red-600" />}
+                              </button>
+                              {Object.values(Category).map(cat => (
+                                <button
+                                  key={cat}
+                                  onClick={() => {
+                                    setSelectedCategory(cat);
+                                    setIsCategoryDropdownOpen(false);
+                                  }}
+                                  className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-between group ${selectedCategory === cat ? 'bg-red-50 text-red-600' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}`}
+                                >
+                                  {cat}
+                                  {selectedCategory === cat && <Check size={14} className="text-red-600" />}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* View Toggle Buttons */}
@@ -420,7 +453,7 @@ const AdminApp: React.FC = () => {
                           </div>
 
                           {/* Overlay Actions */}
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[2px]">
+                          <div className="hidden xl:flex absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-3 backdrop-blur-[2px]">
                             <button
                               onClick={() => handleEditProduct(product)}
                               className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-900 hover:text-blue-600 transition-colors shadow-lg transform scale-0 group-hover:scale-100 duration-200"
@@ -442,6 +475,24 @@ const AdminApp: React.FC = () => {
                           <div className="mb-4 flex-1">
                             <h3 className="font-bold text-slate-900 text-sm line-clamp-2 mb-1" title={product.name}>{product.name}</h3>
                             <p className="text-xs text-slate-500">{product.packageContents?.length || 0} item paket</p>
+                          </div>
+
+                          {/* Mobile Actions */}
+                          <div className="flex gap-2 mb-4 xl:hidden">
+                            <button
+                              onClick={() => handleEditProduct(product)}
+                              className="flex-1 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1.5 active:bg-blue-100 transition-colors"
+                            >
+                              <Edit3 size={12} />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product.id)}
+                              className="flex-1 py-1.5 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1.5 active:bg-red-100 transition-colors"
+                            >
+                              <Trash2 size={12} />
+                              Hapus
+                            </button>
                           </div>
 
                           <div className="flex items-end justify-between border-t border-slate-50 pt-4 mt-auto">

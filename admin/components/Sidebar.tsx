@@ -39,11 +39,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         {!isCollapsed ? (
           <>
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="bg-white p-2 rounded-xl shrink-0">
-                <Flag size={20} className="text-red-600 fill-current" />
+              <div className="shrink-0">
+                <img src="/images/logo.png" alt="Logo" className="w-10 h-10 object-contain rounded-xl" />
               </div>
               <div className="overflow-hidden whitespace-nowrap min-w-0">
-                <h1 className="text-lg font-bold tracking-tight text-white leading-none truncate">PaskibraRent</h1>
+                <h1 className="text-lg font-bold tracking-tight text-white leading-none truncate">KostumFadilyss</h1>
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1.5 font-semibold truncate">Admin Panel</p>
               </div>
             </div>

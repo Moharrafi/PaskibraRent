@@ -76,7 +76,7 @@ router.post('/broadcast', async (req, res) => {
             // Check if imageUrl is a Base64 string
             if (imageUrl && imageUrl.startsWith('data:image')) {
                 const cid = 'broadcast-banner'; // Content-ID
-                imageHtml = `<img src="cid:${cid}" alt="Newsletter Image" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">`;
+                imageHtml = `<img src="cid:${cid}" alt="Newsletter Image" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; display: block;">`;
 
                 mailOptions.attachments = [{
                     path: imageUrl,
@@ -84,7 +84,7 @@ router.post('/broadcast', async (req, res) => {
                 }];
             } else if (imageUrl) {
                 // Regular URL
-                imageHtml = `<img src="${imageUrl}" alt="Newsletter Image" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">`;
+                imageHtml = `<img src="${imageUrl}" alt="Newsletter Image" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; display: block;">`;
             }
 
             mailOptions.html = `
@@ -105,7 +105,7 @@ router.post('/broadcast', async (req, res) => {
                         </div>
 
                         <!-- Hero Image -->
-                        ${imageHtml ? `<div style="width: 100%; background-color: #f8fafc;">${imageHtml.replace('style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;"', 'style="width: 100%; height: auto; display: block;"')}</div>` : ''}
+                        ${imageHtml ? `<div style="padding: 24px 32px 0 32px;">${imageHtml}</div>` : ''}
 
                         <!-- Content -->
                         <div style="padding: 32px 32px 40px 32px;">

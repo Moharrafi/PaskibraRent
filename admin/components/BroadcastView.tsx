@@ -162,7 +162,11 @@ const BroadcastView: React.FC<BroadcastViewProps> = ({ onShowToast }) => {
                             <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Official Newsletter</p>
                         </div>
 
-                        {imageUrl && <img src={imageUrl} alt="Banner" className="w-full h-auto object-cover" />}
+                        {imageUrl && (
+                            <div className="px-8 pt-6">
+                                <img src={imageUrl} alt="Banner" className="w-full h-auto object-cover rounded-xl shadow-sm" />
+                            </div>
+                        )}
 
                         <div className="p-8">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">{subject}</h2>
