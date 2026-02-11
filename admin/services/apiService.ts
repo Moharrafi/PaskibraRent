@@ -67,6 +67,11 @@ export const apiService = {
         };
     },
 
+    getRevenueStats: async (year?: number) => {
+        const response = await api.get('/bookings/stats/revenue', { params: { year } });
+        return response.data;
+    },
+
     // Broadcast
     sendBroadcast: async (subject: string, message: string, imageUrl?: string): Promise<any> => {
         const response = await api.post('/newsletter/broadcast', { subject, message, imageUrl });

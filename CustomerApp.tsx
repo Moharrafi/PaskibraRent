@@ -736,7 +736,7 @@ const CustomerApp: React.FC = () => {
               {/* Column 1: Brand */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
-                  <img src="/images/logo.png" alt="Logo" className="w-12 h-12 rounded-xl object-contain border border-slate-700" loading="lazy" />
+                  <img src="/images/logo.png" alt="Logo" width="48" height="48" className="w-12 h-12 rounded-xl object-contain border border-slate-700" loading="lazy" />
                   <span className="text-2xl font-bold tracking-tight">{APP_NAME}</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed text-sm">

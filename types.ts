@@ -9,6 +9,7 @@ export interface Costume {
   tags: string[];
   availableStock: number;
   material: string;
+  rentalDuration: number;
   sizes: string[];
   includedItems: string[];
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { GalleryItem } from '../types';
 import { apiService } from '../services/apiService';
 import { Plus, Trash2, Image as ImageIcon, X, Upload, Calendar, MapPin, Edit3 } from 'lucide-react';
@@ -209,7 +210,7 @@ const GalleryView: React.FC<GalleryViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
+      {deleteConfirmId && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={(e) => e.stopPropagation()}
@@ -237,12 +238,13 @@ const GalleryView: React.FC<GalleryViewProps> = ({ onShowToast }) => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Upload/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      {isModalOpen && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden border border-slate-100 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
               <h3 className="font-bold text-lg text-slate-900">
@@ -332,7 +334,8 @@ const GalleryView: React.FC<GalleryViewProps> = ({ onShowToast }) => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

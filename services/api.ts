@@ -102,6 +102,7 @@ export const productService = {
             tags: item.tags || [],
             availableStock: item.stock,
             material: item.material,
+            rentalDuration: Number(item.rentalDuration || item.rental_duration || 3),
             sizes: item.sizes || [],
             includedItems: item.packageContents || []
         }));

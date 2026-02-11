@@ -9,6 +9,7 @@ interface ProductFormProps {
 }
 
 const COMMON_SIZES = ['S', 'M', 'L', 'XL', 'XXL', '3XL', 'Custom'];
+const SHOE_SIZES = [...Array.from({ length: 11 }, (_, i) => (35 + i).toString()), 'Custom']; // 35 - 45 + Custom
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel }) => {
   const [formData, setFormData] = useState<Partial<Product>>({
@@ -24,6 +25,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
     imageUrls: []
   });
 
+  const [activeSizeCategory, setActiveSizeCategory] = useState<'costume' | 'shoe'>('costume');
   const [newContentItem, setNewContentItem] = useState('');
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -32,6 +34,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
     if (initialData) {
       setFormData(initialData);
       setSelectedImageIndex(0);
+
+      // Detect if existing sizes are likely shoe sizes
+      const hasShoeSize = initialData.sizes?.some(s => !isNaN(Number(s)) && Number(s) >= 35);
+      if (hasShoeSize) {
+        setActiveSizeCategory('shoe');
+      } else {
+        setActiveSizeCategory('costume');
+      }
     }
   }, [initialData]);
 
@@ -137,6 +147,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
   };
 
   const currentImages = formData.imageUrls || [];
+  const currentSizeOptions = activeSizeCategory === 'costume' ? COMMON_SIZES : SHOE_SIZES;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
@@ -144,7 +155,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
       <div className="bg-white w-full max-w-5xl max-h-[90vh] flex flex-col border border-slate-200 rounded-[2.5rem] shadow-2xl overflow-hidden">
 
         {/* Header - Fixed */}
-        <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100 bg-white shrink-0 z-20">
+        {/* Header - Fixed */}
+        <div className="flex justify-between items-center px-6 py-4 md:px-8 md:py-6 border-b border-slate-100 bg-white shrink-0 z-20">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
               {initialData ? 'Edit Katalog' : 'Tambah Produk Baru'}
@@ -160,7 +172,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
 
           {/* Scrollable Content Body */}
-          <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-10 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 md:space-y-10 custom-scrollbar">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
               {/* Left Column: Image Gallery */}
@@ -278,7 +290,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                       <input
                         type="number"
                         name="stock"
-                        value={formData.stock}
+                        value={formData.stock || ''}
                         onChange={handleChange}
                         className="w-full px-5 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100 outline-none text-sm text-slate-900 rounded-2xl font-medium"
                         min="0"
@@ -308,7 +320,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                       <input
                         type="number"
                         name="rentalDuration"
-                        value={formData.rentalDuration}
+                        value={formData.rentalDuration || ''}
                         onChange={handleChange}
                         className="w-full px-5 py-3 bg-white border border-slate-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-200 outline-none font-bold text-slate-900 rounded-2xl"
                         min="1"
@@ -345,9 +357,27 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-3 ml-1">Ukuran Tersedia</label>
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="block text-xs font-bold text-slate-400 ml-1">Ukuran Tersedia</label>
+                          <div className="flex bg-slate-100 rounded-lg p-1">
+                            <button
+                              type="button"
+                              onClick={() => setActiveSizeCategory('costume')}
+                              className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${activeSizeCategory === 'costume' ? 'bg-white shadow text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                              Pakaian
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActiveSizeCategory('shoe')}
+                              className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${activeSizeCategory === 'shoe' ? 'bg-white shadow text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                              Sepatu
+                            </button>
+                          </div>
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {COMMON_SIZES.map(size => (
+                          {currentSizeOptions.map(size => (
                             <button
                               key={size}
                               type="button"
@@ -418,7 +448,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
           </div>
 
           {/* Footer - Fixed */}
-          <div className="flex justify-end gap-3 px-8 py-5 border-t border-slate-100 bg-white shrink-0 z-20">
+          <div className="flex justify-end gap-3 px-6 py-4 md:px-8 md:py-5 border-t border-slate-100 bg-white shrink-0 z-20">
             <button
               type="button"
               onClick={onCancel}

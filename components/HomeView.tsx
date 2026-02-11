@@ -55,6 +55,8 @@ const HomeView: React.FC<HomeViewProps> = ({
                         src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
                         alt="Hero Background"
                         className="w-full h-full object-cover object-center"
+                        width="1920"
+                        height="1080"
                         fetchPriority="high"
                         loading="eager"
                     />
@@ -189,39 +191,55 @@ const HomeView: React.FC<HomeViewProps> = ({
                 </div>
             </section>
 
-            {/* Process Section - Clean & Minimal */}
-            <section className="py-24 bg-slate-50/50">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-col md:flex-row gap-16 md:gap-8">
-                        {/* Left: Heading */}
-                        <div className="md:w-1/3">
+            {/* Process Section - Elegant & Refined */}
+            <section className="py-32 bg-slate-900 relative overflow-hidden">
+                {/* Background Accents */}
+                <div className="absolute top-0 right-0 p-96 bg-red-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 p-64 bg-slate-800/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="flex flex-col lg:flex-row gap-20 items-center">
+                        {/* Left: Heading & Context */}
+                        <div className="lg:w-1/3 text-center lg:text-left">
                             <ScrollReveal>
-                                <span className="text-red-600 font-bold tracking-widest text-xs uppercase mb-4 block">Alur Peminjaman</span>
-                                <h2 className="text-4xl font-bold text-slate-900 mb-6 leading-tight tracking-tight">Proses Mudah,<br />Tanpa Ribet.</h2>
-                                <p className="text-slate-500 leading-relaxed mb-8">
-                                    Sistem kami dirancang untuk efisiensi sekolah dan instansi. Fokus pada latihan, biarkan kami mengurus seragam.
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 bg-slate-800/50 backdrop-blur-sm mb-6">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                                    <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Alur Peminjaman</span>
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
+                                    Simpel.<br /><span className="text-slate-500">Efisien.</span><br />Profesional.
+                                </h2>
+                                <p className="text-slate-400 text-lg leading-relaxed mb-10">
+                                    Kami memahami betapa berharganya waktu latihan Anda. Sistem kami dirancang untuk memangkas birokrasi, sehingga Anda bisa fokus pada performa pasukan.
                                 </p>
-                                <button onClick={() => setView('CATALOG')} className="text-slate-900 font-bold border-b-2 border-slate-200 hover:border-red-600 pb-1 transition-all">
-                                    Mulai Sewa Sekarang
+                                <button onClick={() => setView('CATALOG')} className="group flex items-center gap-3 text-white font-bold border-b border-red-600 pb-1 hover:text-red-500 transition-all mx-auto lg:mx-0">
+                                    <span>Mulai Sewa Sekarang</span>
+                                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 </button>
                             </ScrollReveal>
                         </div>
 
-                        {/* Right: Steps Grid */}
-                        <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {/* Right: Elegant Steps Grid */}
+                        <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {[
-                                { icon: Search, title: '1. Pilih Model', desc: 'Jelajahi katalog lengkap dengan detail ukuran.' },
-                                { icon: Calendar, title: '2. Tentukan Jadwal', desc: 'Pilih tanggal pengambilan dan pengembalian.' },
-                                { icon: Truck, title: '3. Pengambilan', desc: 'Ambil di store atau gunakan layanan antar.' },
-                                { icon: RotateCcw, title: '4. Pengembalian', desc: 'Kembalikan kotor tidak masalah, kami yang laundry.' }
+                                { number: '01', icon: Search, title: 'Pilih Model', desc: 'Eksplorasi katalog premium kami dengan detail ukuran spesifik.' },
+                                { number: '02', icon: Calendar, title: 'Jadwal', desc: 'Tentukan tanggal pengambilan dan durasi sewa yang fleksibel.' },
+                                { number: '03', icon: Truck, title: 'Fitting & Ambil', desc: 'Kunjungi store untuk fitting presisi atau gunakan layanan antar.' },
+                                { number: '04', icon: RotateCcw, title: 'Kembali & Rapi', desc: 'Wajib dikembalikan dalam keadaan bersih dan rapi seperti semula.' }
                             ].map((step, i) => (
                                 <ScrollReveal key={i} delay={i * 0.1}>
-                                    <div className="bg-white p-6 rounded-3xl border border-slate-200 hover:border-slate-200 hover:shadow-xl transition-all duration-300 group h-full">
-                                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300">
-                                            <step.icon size={22} strokeWidth={1.5} />
+                                    <div className="relative p-8 rounded-[2rem] bg-slate-800/50 border border-slate-700 hover:bg-slate-800 hover:border-red-900/50 transition-all duration-500 group overflow-hidden h-full">
+                                        <div className="absolute top-0 right-0 p-20 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                                        <div className="flex justify-between items-start mb-6 relative z-10">
+                                            <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-red-600 transition-all duration-300 shadow-lg shadow-black/20 group-hover:shadow-red-900/20">
+                                                <step.icon size={24} strokeWidth={1.5} />
+                                            </div>
+                                            <span className="text-4xl font-black text-slate-700/30 group-hover:text-slate-700/50 transition-colors font-serif italic">{step.number}</span>
                                         </div>
-                                        <h3 className="text-lg font-bold text-slate-900 mb-2">{step.title}</h3>
-                                        <p className="text-sm text-slate-500 leading-relaxed">{step.desc}</p>
+
+                                        <h3 className="text-xl font-bold text-white mb-3 relative z-10 group-hover:text-red-100 transition-colors">{step.title}</h3>
+                                        <p className="text-sm text-slate-400 leading-relaxed relative z-10 group-hover:text-slate-300 transition-colors">{step.desc}</p>
                                     </div>
                                 </ScrollReveal>
                             ))}
@@ -261,9 +279,11 @@ const HomeView: React.FC<HomeViewProps> = ({
                         <ScrollReveal className="lg:w-1/2 relative" delay={0.2}>
                             <div className="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200 border border-slate-100">
                                 <img
+                                    width="800"
+                                    height="600"
                                     src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
                                     alt="Detail Seragam"
-                                    className="w-full h-[600px] object-cover"
+                                    className="w-full h-[600px] object-cover aspect-[4/3]"
                                     loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-80" />

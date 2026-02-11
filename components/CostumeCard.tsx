@@ -94,7 +94,7 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
                 Rp {costume.price.toLocaleString('id-ID')}
               </span>
             </div>
-            <span className="text-xs text-slate-400 mb-1">/ 3 Hari</span>
+            <span className="text-xs text-slate-400 mb-1">/ {costume.rentalDuration} Hari</span>
           </div>
 
           <div className="flex gap-2">

@@ -90,7 +90,7 @@ router.get('/availability', async (req, res) => {
             WHERE 
                 b.status IN ('Menunggu', 'Konfirmasi', 'Sedang Disewa') AND
                 (
-                    (DATE_SUB(b.pickup_date, INTERVAL 10 DAY) <= ? AND b.return_date >= ?)
+                    (DATE_SUB(b.pickup_date, INTERVAL 5 DAY) <= ? AND b.return_date >= ?)
                 )
             GROUP BY bi.item_id
         `;
@@ -382,6 +382,47 @@ router.post('/', async (req, res) => {
         res.status(500).json({ message: 'Gagal memproses booking', error: err.message });
     } finally {
         connection.release();
+    }
+});
+
+// GET Revenue Stats
+router.get('/stats/revenue', async (req, res) => {
+    try {
+        const year = req.query.year || new Date().getFullYear();
+
+        // Query to get monthly revenue and count for the specified year
+        // We filter by 'Selesai', 'Sedang Disewa', 'Konfirmasi' (Approved bookings)
+        // Adjust status filter as needed based on what counts as "revenue"
+        const query = `
+            SELECT 
+                MONTH(pickup_date) as month, 
+                COUNT(*) as rental_count, 
+                SUM(total_price) as total_revenue
+            FROM bookings 
+            WHERE 
+                YEAR(pickup_date) = ? AND 
+                status IN ('Selesai', 'Sedang Disewa', 'Konfirmasi', 'Menunggu') 
+            GROUP BY MONTH(pickup_date)
+            ORDER BY month ASC
+        `;
+
+        const [rows] = await pool.query(query, [year]);
+
+        // Format data for all 12 months (0-fill missing months)
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const stats = monthNames.map((name, index) => {
+            const monthData = rows.find(r => r.month === (index + 1));
+            return {
+                name: name,
+                rentals: monthData ? monthData.rental_count : 0,
+                revenue: monthData ? Number(monthData.total_revenue) : 0
+            };
+        });
+
+        res.json(stats);
+    } catch (err) {
+        console.error('Error fetching revenue stats:', err);
+        res.status(500).json({ message: 'Gagal mengambil statistik pendapatan' });
     }
 });
 

@@ -1,9 +1,23 @@
 @import "tailwindcss";
 
-/* Custom CSS for Marquee Animation */
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
+/* Hardware Acceleration Class */
+.gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Custom CSS for Marquee Animation */
 .animate-marquee {
     animation: marquee 40s linear infinite;
+    will-change: transform;
+    /* Hint for browser */
 }
 
 @keyframes marquee {
@@ -23,8 +37,6 @@
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .custom-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
 }
@@ -40,21 +52,6 @@
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes popIn {
-    0% {
-        transform: scale(0.95);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.animate-pop-in {
-    animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: fadeIn 0.3s ease-out;
+    will-change: opacity;
 }

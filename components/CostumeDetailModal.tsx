@@ -79,7 +79,7 @@ const CostumeDetailModal: React.FC<CostumeDetailModalProps> = ({
 
           {/* Main Image View */}
           <div
-            className="relative w-full h-64 sm:h-80 md:h-auto md:aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100 mb-4 cursor-zoom-in group shrink-0"
+            className="relative h-[40vh] w-auto aspect-[3/4] md:h-auto md:w-full md:aspect-[3/4] mx-auto rounded-2xl overflow-hidden bg-white shadow-sm border border-slate-100 mb-4 cursor-zoom-in group shrink-0"
             onMouseEnter={() => setIsZoomed(true)}
             onMouseLeave={() => setIsZoomed(false)}
           >
@@ -129,7 +129,7 @@ const CostumeDetailModal: React.FC<CostumeDetailModalProps> = ({
               </h2>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-red-700">Rp {costume.price.toLocaleString('id-ID')}</span>
-                <span className="text-sm text-slate-400">/ 3 Hari</span>
+                <span className="text-sm text-slate-400">/ {costume.rentalDuration} Hari</span>
               </div>
             </div>
 
@@ -145,7 +145,7 @@ const CostumeDetailModal: React.FC<CostumeDetailModalProps> = ({
                 <div className="relative z-10">
                   <h4 className="font-bold text-amber-900 text-sm">Unit Sedang Disewa Penuh</h4>
                   <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                    Mohon maaf, saat ini seluruh stok item ini sedang digunakan oleh instansi lain. Estimasi ketersediaan kembali adalah <b>2-3 hari kerja</b>.
+                    Mohon maaf, saat ini seluruh stok item ini sedang digunakan oleh instansi lain. Estimasi ketersediaan kembali adalah <b>3-5 hari kerja</b>.
                   </p>
                 </div>
               </div>
