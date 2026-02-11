@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Product, Category } from '../types';
-import { generateProductContent } from '../services/geminiService';
-import { Sparkles, Loader2, X, Upload, Plus, Trash, Check, Image as ImageIcon, Star } from 'lucide-react';
+import { X, Upload, Plus, Trash, Check, Image as ImageIcon, Star } from 'lucide-react';
 
 interface ProductFormProps {
   initialData?: Product;
@@ -26,7 +25,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
   });
 
   const [newContentItem, setNewContentItem] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
@@ -117,25 +116,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
     setSelectedImageIndex(0);
   };
 
-  const handleAiGenerate = async () => {
-    if (!formData.name) return alert('Mohon isi nama produk terlebih dahulu.');
 
-    setIsGenerating(true);
-    try {
-      const suggestion = await generateProductContent(formData.name!, formData.category as Category);
-      setFormData(prev => ({
-        ...prev,
-        description: suggestion.description,
-        price: prev.price === 0 ? suggestion.suggestedPrice : prev.price,
-        material: suggestion.material,
-        packageContents: suggestion.packageContents.length > 0 ? suggestion.packageContents : prev.packageContents
-      }));
-    } catch (error) {
-      alert('Gagal generate AI. Coba lagi.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,18 +238,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
 
                 <div className="flex justify-between items-center">
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Informasi Dasar</h3>
-                  <button
-                    type="button"
-                    onClick={handleAiGenerate}
-                    disabled={isGenerating || !formData.name}
-                    className={`text-xs flex items-center gap-2 px-4 py-2 border transition-all font-medium rounded-full ${isGenerating || !formData.name
-                      ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed'
-                      : 'bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300'
-                      }`}
-                  >
-                    {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                    Auto-Fill AI
-                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">

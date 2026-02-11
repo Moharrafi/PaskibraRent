@@ -1,7 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Category } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+// const ai = new GoogleGenAI({ apiKey }); // Removed immediate initialization
 
 export interface AISuggestion {
   description: string;
@@ -15,7 +16,15 @@ export const generateProductContent = async (
   name: string,
   category: Category
 ): Promise<AISuggestion> => {
+  if (!apiKey) {
+    console.error("Gemini API Key is missing");
+    throw new Error("API Key Gemini tidak ditemukan. Harap konfigurasi di .env atau pengaturan deployment.");
+  }
+
   try {
+    // Initialize inside the function safely
+    const ai = new GoogleGenAI({ apiKey });
+
     const prompt = `
       You are an expert inventory manager for 'PaskibraRent', a rental service for Paskibra (Flag Raisers) equipment in Indonesia.
       
@@ -31,7 +40,7 @@ export const generateProductContent = async (
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash", // Updated to newer model for better JSON
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -65,6 +74,6 @@ export const generateProductContent = async (
     };
   } catch (error) {
     console.error("AI Generation failed:", error);
-    throw new Error("Gagal membuat konten dengan AI. Pastikan API Key valid.");
+    throw new Error("Gagal membuat konten dengan AI. Pastikan API Key valid dan kuota tersedia.");
   }
 };
