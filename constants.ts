@@ -3,4 +3,6 @@
 
 
 export const APP_NAME = "KostumFadilyss";
+export const APP_DESCRIPTION = "Sewa Kostum Paskibra Terbaik di Cileungsi & Bogor. Koleksi lengkap, bahan premium, wangi, dan siap pakai. Hubungi kami untuk kebutuhan seragam pasukan Anda.";
+export const APP_URL = "https://kostumfadilyss.com";
 export const CONTACT_WA = "62895428282092";

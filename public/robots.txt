@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://paskibrarent.vercel.app/sitemap.xml
+Sitemap: https://kostumfadilyss.com/sitemap.xml

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { APP_NAME } from '../constants';
+import { APP_NAME, APP_URL, APP_DESCRIPTION } from '../constants';
 
 interface SEOProps {
     title: string;
-    description: string;
+    description?: string;
     keywords?: string;
     image?: string;
     url?: string;
@@ -13,15 +13,15 @@ interface SEOProps {
 
 const SEO: React.FC<SEOProps> = ({
     title,
-    description,
-    keywords = "sewa kostum paskibra, sewa baju paskibra, kostum paskibra jakarta, kostum paskibra bogor, sewa seragam paskibra",
+    description = APP_DESCRIPTION,
+    keywords = "sewa kostum paskibra, sewa baju paskibra, kostum paskibra jakarta, kostum paskibra bogor, sewa seragam paskibra, kostum paskibra cileungsi, kostum paskibra cibubur, sewa baju adat bogor, sewa kostum karnaval, atribut paskibra lengkap, sewa jas formal, kostum tari tradisional, sewa baju pdu paskibra, sewa baju pdh paskibra",
     image = "/images/logo.png",
-    url = "https://paskibrarent.vercel.app/",
+    url = APP_URL,
     type = "website"
 }) => {
     const siteTitle = `${title} | ${APP_NAME}`;
-    const fullUrl = url.startsWith('http') ? url : `https://paskibrarent.vercel.app${url}`;
-    const fullImage = image.startsWith('http') ? image : `https://paskibrarent.vercel.app${image}`;
+    const fullUrl = url.startsWith('http') ? url : `${APP_URL}${url}`;
+    const fullImage = image.startsWith('http') ? image : `${APP_URL}${image}`;
 
     const schemaData = {
         "@context": "https://schema.org",
@@ -29,7 +29,7 @@ const SEO: React.FC<SEOProps> = ({
         "name": APP_NAME,
         "image": fullImage,
         "description": description,
-        "url": "https://paskibrarent.vercel.app/",
+        "url": APP_URL,
         "telephone": "+62895428282092",
         "address": {
             "@type": "PostalAddress",
