@@ -771,7 +771,7 @@ const CustomerApp: React.FC = () => {
                 <ul className="space-y-6 text-slate-400 text-sm">
                   <li className="flex items-start gap-3">
                     <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><MapPin size={18} /></div>
-                    <span>Jl. Pahlawan No.41, Limus Nunggal,<br />Cileungsi, Bogor, Jawa Barat 16820</span>
+                    <span>Jl. Kp. Cirumput samping mesjid al istiqomah No.60,<br />Limus Nunggal, Cileungsi, Bogor, Jawa Barat 16820</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="p-2 bg-slate-800 rounded-lg shrink-0 text-red-500"><Phone size={18} /></div>

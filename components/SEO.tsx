@@ -33,7 +33,7 @@ const SEO: React.FC<SEOProps> = ({
         "telephone": "+62895428282092",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Jl. Pahlawan No.41, Limus Nunggal",
+            "streetAddress": "Jl. Kp. Cirumput samping mesjid al istiqomah No.60, Limus Nunggal",
             "addressLocality": "Cileungsi",
             "addressRegion": "Jawa Barat",
             "postalCode": "16820",
@@ -41,8 +41,8 @@ const SEO: React.FC<SEOProps> = ({
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": -6.415,
-            "longitude": 106.965
+            "latitude": -6.3930125,
+            "longitude": 106.9602313
         },
         "openingHoursSpecification": [
             {

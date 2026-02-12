@@ -262,8 +262,8 @@ export const RentalHistoryModal: React.FC<RentalHistoryModalProps> = ({ isOpen, 
                         <h1 class="text-2xl font-bold text-slate-900">${APP_NAME}</h1>
                     </div>
                     <p class="text-slate-500 text-sm">
-                       Jl. Pahlawan No.41, Limus Nunggal,<br>
-                        Cileungsi, Bogor, 16820<br>
+                       Jl. Kp. Cirumput samping mesjid al istiqomah No.60,<br>
+                        Limus Nunggal, Cileungsi, Bogor, 16820<br>
                         Jawa Barat, Indonesia
                     </p>
                 </div>

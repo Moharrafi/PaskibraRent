@@ -75,7 +75,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                             className="lg:w-1/2 text-center lg:text-left relative z-20"
                         >
                             <div className="inline-flex items-center gap-2 mb-6 border-l-4 border-red-600 pl-4">
-                                <span className="text-slate-400 font-medium tracking-widest text-sm uppercase">Est. 2024 • Jakarta</span>
+                                <span className="text-slate-400 font-medium tracking-widest text-sm uppercase">Est. 2024 • Bogor</span>
                             </div>
 
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.9] tracking-tight mb-8">
@@ -85,8 +85,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                             </h1>
 
                             <p className="text-slate-400 text-lg md:text-xl leading-relaxed max-w-lg mx-auto lg:mx-0 mb-10 border-l border-slate-800 pl-6 hidden md:block">
-                                Spesialis penyewaan seragam Paskibra dengan standar jahitan nasional.
-                                Detail presisi, material premium, dan layanan profesional.
+                                Penyewaan seragam Paskibra berkualitas dengan jahitan rapi dan detail presisi, nyaman dipakai dan siap tampil percaya diri.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
@@ -113,8 +112,8 @@ const HomeView: React.FC<HomeViewProps> = ({
                                     <span className="text-sm text-slate-400">Garansi Kualitas</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Truck size={20} className="text-slate-300" />
-                                    <span className="text-sm text-slate-400">Kirim Seluruh Indonesia</span>
+                                    <Clock size={20} className="text-slate-300" />
+                                    <span className="text-sm text-slate-400">Tersedia 24/7</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -259,9 +258,9 @@ const HomeView: React.FC<HomeViewProps> = ({
 
                             <div className="space-y-6">
                                 {[
-                                    { title: 'Laundry Hygienic Steam', desc: 'Setiap kostum dicuci dengan standar hotel bintang 5.', icon: Sparkles },
-                                    { title: 'Fitting Presisi & Rapi', desc: 'Ukuran S-XXL yang dikalibrasi untuk postur tegap.', icon: Ruler },
-                                    { title: 'Material Premium Drill', desc: 'Bahan Japan Drill yang sejuk, tebal, dan tidak kusut.', icon: Shield }
+                                    { title: 'Laundry Hygienic Steam', desc: 'Dicuci dengan proses laundry agar bersih, segar, dan nyaman dipakai.', icon: Sparkles },
+                                    { title: 'Fitting Presisi & Rapi', desc: 'Potongan rapi dengan ukuran lengkap untuk menunjang postur tetap tegap.', icon: Ruler },
+                                    { title: 'Material Premium Drill', desc: 'Bahan sejuk, cukup tebal, tidak mudah kusut, dan nyaman digunakan.', icon: Shield }
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-start gap-5 group">
                                         <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-red-50 group-hover:text-red-600 transition-colors shrink-0">
@@ -404,9 +403,9 @@ const HomeView: React.FC<HomeViewProps> = ({
                                     Alamat Lengkap
                                 </h3>
                                 <p className="text-slate-300 leading-relaxed text-lg">
-                                    Jl. Pahlawan No.41, Limus Nunggal,<br />
-                                    Kec. Cileungsi, Kabupaten Bogor,<br />
-                                    Jawa Barat 16820
+                                    Jl. Kp. Cirumput samping mesjid al istiqomah No.60,<br />
+                                    RT.01/RW.02, Limus Nunggal, Kec. Cileungsi,<br />
+                                    Kabupaten Bogor, Jawa Barat 16820
                                 </p>
                             </div>
 
@@ -438,7 +437,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                         {/* Map Iframe Side */}
                         <div className="lg:col-span-2 h-[400px] lg:h-auto min-h-[400px] relative bg-slate-100">
                             <iframe
-                                src="https://maps.google.com/maps?q=-6.365256,106.97482&hl=es;z=14&output=embed"
+                                src="https://maps.google.com/maps?q=Kostum+Fadilys+Cileungsi&hl=id&z=16&output=embed"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
