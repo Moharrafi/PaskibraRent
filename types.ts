@@ -28,7 +28,9 @@ export interface BookingDetails {
   email: string;
   rentalDuration: number;
   totalPrice: number;
+  paymentMethod?: string;
   items: CartItem[];
+  invoiceId?: string;
 }
 
 export interface User {

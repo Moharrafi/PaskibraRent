@@ -311,7 +311,13 @@ const CustomerApp: React.FC = () => {
       const response = await api.post('/bookings', details);
       console.log("Booking Email Sent:", response.data);
 
-      setLastBooking(details);
+      // Add the returned bookingId to the details for the Success View
+      const completedBooking = {
+        ...details,
+        invoiceId: response.data.bookingId
+      };
+
+      setLastBooking(completedBooking);
       setCart([]);
       setIsCartOpen(false);
       setView('SUCCESS');
