@@ -88,7 +88,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 // --- AUTHENTICATION SERVICE ---
 
 export const checkAuth = (): boolean => {
-  return localStorage.getItem(AUTH_KEY) === 'true';
+  return localStorage.getItem(AUTH_KEY) === 'true' && !!localStorage.getItem('token');
 };
 
 export const login = (email: string, password: string): boolean => {
@@ -102,6 +102,7 @@ export const login = (email: string, password: string): boolean => {
 
 export const logout = (): void => {
   localStorage.removeItem(AUTH_KEY);
+  localStorage.removeItem('token');
 };
 
 // --- PRODUCT SERVICE ---
@@ -126,7 +127,7 @@ export const getProducts = (): Product[] => {
 export const saveProduct = (product: Product): Product[] => {
   const products = getProducts();
   const index = products.findIndex(p => p.id === product.id);
-  
+
   let newProducts;
   if (index >= 0) {
     newProducts = [...products];
@@ -134,7 +135,7 @@ export const saveProduct = (product: Product): Product[] => {
   } else {
     newProducts = [product, ...products];
   }
-  
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newProducts));
   return newProducts;
 };
@@ -163,7 +164,7 @@ export const getGallery = (): GalleryItem[] => {
 export const saveGalleryItem = (item: GalleryItem): GalleryItem[] => {
   const items = getGallery();
   const index = items.findIndex(i => i.id === item.id);
-  
+
   let newItems;
   if (index >= 0) {
     newItems = [...items];
@@ -171,7 +172,7 @@ export const saveGalleryItem = (item: GalleryItem): GalleryItem[] => {
   } else {
     newItems = [item, ...items];
   }
-  
+
   localStorage.setItem(GALLERY_KEY, JSON.stringify(newItems));
   return newItems;
 };

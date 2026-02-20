@@ -13,15 +13,37 @@ const api = axios.create({
 // Add auth token if available (reusing main app token logic if needed, or admin specific)
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token'); // Use standard token if integrated
-    // Or if using the simple admin auth from storageService, we might not have a real token yet.
-    // For now, we assume the API is open or we use the 'token' from localStorage if it exists.
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });
 
+// Add response interceptor to handle 401/403 errors (Invalid token or not an admin)
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            // Force logout if access is denied so they can sign in properly
+            const isAuth = localStorage.getItem('paskibrarent_auth_session');
+            if (isAuth) {
+                localStorage.removeItem('paskibrarent_auth_session');
+                // We keep 'token' if we want main app to stay logged in, but since we use same token key, 
+                // it's safer to clear it if it's invalid or force a reload to let AdminApp catch it.
+                window.location.reload();
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export const apiService = {
+    // Auth
+    login: async (email: string, password: string): Promise<{ token: string, user: any }> => {
+        const response = await api.post('/auth/login', { email, password });
+        return response.data;
+    },
+
     // Products
     getProducts: async (): Promise<Product[]> => {
         const response = await api.get('/products');

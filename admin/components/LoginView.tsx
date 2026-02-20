@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Flag, ArrowRight, Lock, Mail } from 'lucide-react';
 import * as storage from '../services/storageService';
 
+import { apiService } from '../services/apiService';
+
 interface LoginViewProps {
   onLoginSuccess: () => void;
   onShowToast: (message: string, type: 'success' | 'error') => void;
@@ -13,24 +15,30 @@ const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onShowToast }) =>
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    // Simulate network delay for effect
-    setTimeout(() => {
-      const success = storage.login(email, password);
-      if (success) {
+    try {
+      const data = await apiService.login(email, password);
+      if (data.token && data.user && data.user.role === 'admin') {
+        localStorage.setItem('token', data.token);
+        // keep old flag for UI consistency if needed
+        storage.login(email, password);
         onShowToast('Login Berhasil! Selamat datang.', 'success');
         onLoginSuccess();
       } else {
-        const errMsg = 'Email atau password salah. (Hint: Pass = admin123)';
-        setError(errMsg);
-        onShowToast('Login Gagal. Periksa kredensial Anda.', 'error');
+        setError('Akses ditolak. Bukan akun admin.');
+        onShowToast('Akses ditolak. Bukan akun admin.', 'error');
         setIsLoading(false);
       }
-    }, 800);
+    } catch (err: any) {
+      const errMsg = err.response?.data?.message || 'Email atau password salah.';
+      setError(errMsg);
+      onShowToast('Login Gagal. Periksa kredensial Anda.', 'error');
+      setIsLoading(false);
+    }
   };
 
   return (
