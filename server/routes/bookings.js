@@ -2,6 +2,7 @@ const router = require('express').Router();
 const nodemailer = require('nodemailer');
 const { pool } = require('../db');
 const jwt = require('jsonwebtoken');
+const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const APP_NAME = "KostumFadilyss";
 
 // Create Transporter
@@ -14,22 +15,8 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Middleware to verify token
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) return res.status(401).json({ message: 'Akses ditolak. Silakan login.' });
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ message: 'Token tidak valid.' });
-        req.user = user;
-        next();
-    });
-};
-
 // GET User Bookings
-router.get('/my-bookings', authenticateToken, async (req, res) => {
+router.get('/my-bookings', verifyToken, async (req, res) => {
     try {
         const userId = req.user.user.id;
 
@@ -73,6 +60,48 @@ router.get('/my-bookings', authenticateToken, async (req, res) => {
     }
 });
 
+// GET All Bookings (Admin)
+router.get('/all', verifyAdmin, async (req, res) => {
+    try {
+        // In a real app, check for admin role here: if (req.user.role !== 'admin') ...
+
+        // 1. Get All Bookings
+        const [bookings] = await pool.query(
+            'SELECT * FROM bookings ORDER BY created_at DESC'
+        );
+
+        // 2. Get Items for each booking
+        const bookingsWithItems = await Promise.all(bookings.map(async (booking) => {
+            const [items] = await pool.query(
+                'SELECT * FROM booking_items WHERE booking_id = ?',
+                [booking.id]
+            );
+
+            // Check status logic (same as my-bookings)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const returnDate = new Date(booking.return_date);
+
+            let status = booking.status;
+            if (status === 'Sedang Disewa' && returnDate < today) {
+                status = 'Selesai';
+                await pool.query('UPDATE bookings SET status = ? WHERE id = ?', ['Selesai', booking.id]);
+            }
+
+            return {
+                ...booking,
+                status,
+                items
+            };
+        }));
+
+        res.json(bookingsWithItems);
+    } catch (err) {
+        console.error('Error fetching all bookings:', err);
+        res.status(500).json({ message: 'Gagal mengambil data booking' });
+    }
+});
+
 // GET Availability Status
 router.get('/availability', async (req, res) => {
     try {
@@ -103,7 +132,7 @@ router.get('/availability', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -386,7 +415,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET Revenue Stats
-router.get('/stats/revenue', async (req, res) => {
+router.get('/stats/revenue', verifyAdmin, async (req, res) => {
     try {
         const year = req.query.year || new Date().getFullYear();
 

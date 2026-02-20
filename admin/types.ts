@@ -44,3 +44,19 @@ export interface AppSettings {
   storeName: string;
   notifications: boolean;
 }
+
+export interface Booking {
+  id: number;
+  user_id: number;
+  name: string;
+  institution: string;
+  phone: string;
+  email: string;
+  pickup_date: string;
+  return_date: string;
+  total_price: number;
+  status: string;
+  payment_method: string;
+  created_at: string;
+  items: any[];
+}

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db');
+const { verifyAdmin } = require('../middleware/authMiddleware');
 
 // GET all products
 router.get('/', async (req, res) => {
@@ -42,7 +43,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // CREATE product
-router.post('/', async (req, res) => {
+router.post('/', verifyAdmin, async (req, res) => {
     const { name, category, price, rentalDuration, stock, description, imageUrls, material, tags, packageContents, sizes } = req.body;
     try {
         const [result] = await pool.query(
@@ -58,7 +59,7 @@ router.post('/', async (req, res) => {
 });
 
 // UPDATE product
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyAdmin, async (req, res) => {
     const { name, category, price, rentalDuration, stock, description, imageUrls, material, tags, packageContents, sizes } = req.body;
     try {
         await pool.query(
@@ -73,7 +74,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE product
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyAdmin, async (req, res) => {
     try {
         await pool.query('DELETE FROM products WHERE id = ?', [req.params.id]);
         res.status(204).send();

@@ -2,8 +2,8 @@ import React from 'react';
 import { LayoutDashboard, Package, Settings, LogOut, Flag, Image, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 
 interface SidebarProps {
-  activeTab: 'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast';
-  onTabChange: (tab: 'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast') => void;
+  activeTab: 'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast' | 'booking';
+  onTabChange: (tab: 'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast' | 'booking') => void;
   isOpen: boolean;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
@@ -100,6 +100,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <Send size={20} className="shrink-0" />
           {!isCollapsed && <span>Broadcast</span>}
+        </button>
+
+        <button
+          onClick={() => onTabChange('booking')}
+          className={navItemClass(activeTab === 'booking')}
+          title={isCollapsed ? "Booking" : ""}
+        >
+          <Package size={20} className="shrink-0" />
+          {!isCollapsed && <span>Booking</span>}
         </button>
 
         {!isCollapsed && (

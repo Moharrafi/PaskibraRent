@@ -12,7 +12,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({ products, onEdit, onDelet
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-    const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+    const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
 
     const filteredProducts = useMemo(() => {
         return products.filter(product => {

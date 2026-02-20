@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db');
+const { verifyAdmin } = require('../middleware/authMiddleware');
 
 // Subscribe to newsletter
 router.post('/', async (req, res) => {
@@ -26,7 +27,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get all subscribers (Protected - Admin only ideally, but keeping simple for now as requested)
-router.get('/', async (req, res) => {
+router.get('/', verifyAdmin, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC');
         res.json(rows);
@@ -50,7 +51,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-router.post('/broadcast', async (req, res) => {
+router.post('/broadcast', verifyAdmin, async (req, res) => {
     const { subject, message, imageUrl } = req.body;
 
     if (!subject || !message) {

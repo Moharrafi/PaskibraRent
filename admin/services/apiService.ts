@@ -31,6 +31,13 @@ export const apiService = {
         const response = await api.post('/products', product);
         return response.data;
     },
+
+    // Bookings
+    getAllBookings: async (): Promise<any[]> => {
+        const response = await api.get('/bookings/all');
+        return response.data;
+    },
+
     updateProduct: async (product: Product): Promise<Product> => {
         const response = await api.put(`/products/${product.id}`, product);
         return response.data;

@@ -1,6 +1,8 @@
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { pool } = require('./db');
@@ -9,12 +11,38 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// Security headers
+app.use(helmet());
+
+// Limit JSON payload size to 1MB (down from 50MB) to prevent DoS attacks
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
+
+// Stricter CORS configuration
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+}));
+
+// Apply rate limiting to all requests
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    message: { message: 'Terlalu banyak permintaan dari IP ini, silakan coba lagi setelah 15 menit' }
+});
+// Apply stricter rate limiting for auth endpoints (login/register/verify)
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10, // 10 requests per 15 mins for auth
+    message: { message: 'Terlalu banyak percobaan autentikasi, silakan coba lagi nanti' }
+});
+
+app.use('/api', apiLimiter);
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/cart', require('./routes/cart'));
 app.use('/api/products', require('./routes/products'));

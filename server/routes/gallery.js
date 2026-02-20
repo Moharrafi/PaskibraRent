@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db');
+const { verifyAdmin } = require('../middleware/authMiddleware');
 
 // GET all gallery items
 router.get('/', async (req, res) => {
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
 });
 
 // CREATE gallery item
-router.post('/', async (req, res) => {
+router.post('/', verifyAdmin, async (req, res) => {
     const { title, imageUrl, date, location } = req.body;
     try {
         const [result] = await pool.query(
@@ -33,7 +34,7 @@ router.post('/', async (req, res) => {
 });
 
 // UPDATE gallery item
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyAdmin, async (req, res) => {
     const { title, imageUrl, date, location } = req.body;
     try {
         await pool.query(
@@ -48,7 +49,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE gallery item
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyAdmin, async (req, res) => {
     try {
         await pool.query('DELETE FROM gallery WHERE id = ?', [req.params.id]);
         res.json({ message: 'Gallery item deleted' });

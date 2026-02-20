@@ -15,6 +15,7 @@ const LoginView = React.lazy(() => import('./components/LoginView'));
 const GalleryView = React.lazy(() => import('./components/GalleryView'));
 const BroadcastView = React.lazy(() => import('./components/BroadcastView'));
 const InventoryView = React.lazy(() => import('./components/InventoryView'));
+const BookingView = React.lazy(() => import('./components/BookingView'));
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center p-20 text-slate-400">
@@ -39,7 +40,7 @@ const AdminApp: React.FC = () => {
     type: 'success'
   });
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'settings' | 'gallery' | 'broadcast' | 'booking'>('dashboard');
   const [products, setProducts] = useState<Product[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
@@ -200,14 +201,18 @@ const AdminApp: React.FC = () => {
                   {activeTab === 'inventory' && 'Katalog Produk'}
                   {activeTab === 'settings' && 'Pengaturan Sistem'}
                   {activeTab === 'gallery' && 'Galeri Foto'}
+                  {activeTab === 'gallery' && 'Galeri Foto'}
                   {activeTab === 'broadcast' && 'Broadcast Newsletter'}
+                  {activeTab === 'booking' && 'Daftar Booking'}
                 </h1>
                 <p className="text-slate-500 mt-1 text-sm">
                   {activeTab === 'dashboard' && 'Ringkasan aktivitas dan performa toko.'}
                   {activeTab === 'inventory' && 'Kelola inventaris, stok, dan harga sewa.'}
                   {activeTab === 'settings' && 'Konfigurasi aplikasi dan profil admin.'}
                   {activeTab === 'gallery' && 'Kelola dokumentasi kegiatan Paskibra.'}
+                  {activeTab === 'gallery' && 'Kelola dokumentasi kegiatan Paskibra.'}
                   {activeTab === 'broadcast' && 'Kirim pesan update ke semua pelanggan newsletter.'}
+                  {activeTab === 'booking' && 'Kelola daftar pemesanan sewa kostum.'}
                 </p>
               </div>
 
@@ -282,6 +287,13 @@ const AdminApp: React.FC = () => {
               {activeTab === 'broadcast' && (
                 <div className="animate-fade-in">
                   <BroadcastView onShowToast={showToast} />
+                </div>
+              )}
+
+              {/* Booking View */}
+              {activeTab === 'booking' && (
+                <div className="animate-fade-in">
+                  <BookingView onShowToast={showToast} />
                 </div>
               )}
 
