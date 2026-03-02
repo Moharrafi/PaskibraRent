@@ -9,6 +9,12 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      proxy: {
+        '/api': {
+          target: process.env.VITE_API_URL || 'http://127.0.0.1:5000',
+          changeOrigin: true,
+        }
+      }
     },
     plugins: [react(), tailwindcss()],
     resolve: {

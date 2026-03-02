@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 // Security headers
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Limit JSON payload size to 1MB (down from 50MB) to prevent DoS attacks
 app.use(express.json({ limit: '1mb' }));
