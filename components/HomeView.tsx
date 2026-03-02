@@ -90,7 +90,7 @@ const HomeView: React.FC<HomeViewProps> = ({
 
                             <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
                                 <button
-                                    onClick={() => setView('CATALOG')}
+                                    onClick={() => { setView('CATALOG'); window.scrollTo(0, 0); }}
                                     className="px-8 py-5 bg-white text-slate-950 font-bold text-lg rounded-full hover:bg-slate-200 transition-all flex items-center justify-center gap-3 group relative overflow-hidden"
                                 >
                                     <span className="relative z-10">Lihat Koleksi</span>
@@ -170,7 +170,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.1 }}
                                 className="group relative h-[400px] md:h-[500px] rounded-[2.5rem] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500"
-                                onClick={() => { setFilterCategory(item.cat); setView('CATALOG'); }}
+                                onClick={() => { setFilterCategory(item.cat); setView('CATALOG'); window.scrollTo(0, 0); }}
                             >
                                 <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -190,62 +190,81 @@ const HomeView: React.FC<HomeViewProps> = ({
                 </div>
             </section>
 
-            {/* Process Section - Elegant & Refined */}
+            {/* Process Section - Premium Timeline */}
             <section className="py-32 bg-slate-900 relative overflow-hidden">
-                {/* Background Accents */}
-                <div className="absolute top-0 right-0 p-96 bg-red-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 p-64 bg-slate-800/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+                {/* Subtle grid background */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gradient-to-b from-transparent via-red-500/20 to-transparent pointer-events-none" />
 
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="flex flex-col lg:flex-row gap-20 items-center">
-                        {/* Left: Heading & Context */}
-                        <div className="lg:w-1/3 text-center lg:text-left">
-                            <ScrollReveal>
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 bg-slate-800/50 backdrop-blur-sm mb-6">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
-                                    <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Alur Peminjaman</span>
-                                </div>
-                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
-                                    Simpel.<br /><span className="text-slate-500">Efisien.</span><br />Profesional.
-                                </h2>
-                                <p className="text-slate-400 text-lg leading-relaxed mb-10">
-                                    Kami memahami betapa berharganya waktu latihan Anda. Sistem kami dirancang untuk memangkas birokrasi, sehingga Anda bisa fokus pada performa pasukan.
-                                </p>
-                                <button onClick={() => setView('CATALOG')} className="group flex items-center gap-3 text-white font-bold border-b border-red-600 pb-1 hover:text-red-500 transition-all mx-auto lg:mx-0">
-                                    <span>Mulai Sewa Sekarang</span>
-                                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </ScrollReveal>
+                    {/* Header */}
+                    <ScrollReveal className="text-center mb-20">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700/80 bg-slate-800/50 backdrop-blur-sm mb-6">
+                            {/* <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> */}
+                            <span className="text-xs font-bold text-slate-300 uppercase tracking-[0.2em]">Alur Peminjaman</span>
                         </div>
+                        <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-none mb-4">
+                            Simpel. <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600">Efisien.</span><br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">Profesional.</span>
+                        </h2>
+                        <p className="text-slate-400 text-lg max-w-xl mx-auto mt-6 leading-relaxed">
+                            Sistem kami dirancang untuk memangkas birokrasi, sehingga Anda bisa fokus pada performa pasukan.
+                        </p>
+                    </ScrollReveal>
 
-                        {/* Right: Elegant Steps Grid */}
-                        <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Steps - Horizontal Timeline */}
+                    <div className="relative">
+                        {/* Connector Line (desktop only) */}
+                        <div className="hidden lg:block absolute top-[3.5rem] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+                        <div className="hidden lg:block absolute top-[3.5rem] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent animate-pulse" />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
                             {[
-                                { number: '01', icon: Search, title: 'Pilih Model', desc: 'Eksplorasi katalog premium kami dengan detail ukuran spesifik.' },
-                                { number: '02', icon: Calendar, title: 'Jadwal', desc: 'Tentukan tanggal pengambilan dan durasi sewa yang fleksibel.' },
-                                { number: '03', icon: Truck, title: 'Fitting & Ambil', desc: 'Kunjungi store untuk fitting presisi atau gunakan layanan antar.' },
-                                { number: '04', icon: RotateCcw, title: 'Kembali & Rapi', desc: 'Wajib dikembalikan dalam keadaan bersih dan rapi seperti semula.' }
+                                { number: '01', icon: Search, title: 'Pilih Model', desc: 'Eksplorasi katalog premium kami dengan detail ukuran dan ketersediaan real-time.', color: 'from-blue-500/20 to-blue-600/5', ring: 'group-hover:ring-blue-500/40', glow: 'group-hover:shadow-blue-500/20', iconColor: 'group-hover:text-blue-400 group-hover:bg-blue-500/10' },
+                                { number: '02', icon: Calendar, title: 'Atur Jadwal', desc: 'Tentukan tanggal pengambilan dan durasi sewa yang fleksibel sesuai kebutuhan.', color: 'from-violet-500/20 to-violet-600/5', ring: 'group-hover:ring-violet-500/40', glow: 'group-hover:shadow-violet-500/20', iconColor: 'group-hover:text-violet-400 group-hover:bg-violet-500/10' },
+                                { number: '03', icon: Truck, title: 'Fitting & Ambil', desc: 'Kunjungi store untuk fitting presisi atau gunakan layanan antar ke lokasi Anda.', color: 'from-red-500/20 to-red-600/5', ring: 'group-hover:ring-red-500/40', glow: 'group-hover:shadow-red-500/20', iconColor: 'group-hover:text-red-400 group-hover:bg-red-500/10' },
+                                { number: '04', icon: RotateCcw, title: 'Kembali & Rapi', desc: 'Kembalikan dalam keadaan bersih dan rapi. Selesai — siap untuk pasukan berikutnya.', color: 'from-emerald-500/20 to-emerald-600/5', ring: 'group-hover:ring-emerald-500/40', glow: 'group-hover:shadow-emerald-500/20', iconColor: 'group-hover:text-emerald-400 group-hover:bg-emerald-500/10' },
                             ].map((step, i) => (
-                                <ScrollReveal key={i} delay={i * 0.1}>
-                                    <div className="relative p-8 rounded-[2rem] bg-slate-800/50 border border-slate-700 hover:bg-slate-800 hover:border-red-900/50 transition-all duration-500 group overflow-hidden h-full">
-                                        <div className="absolute top-0 right-0 p-20 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <ScrollReveal key={i} delay={i * 0.12}>
+                                    <div className={`relative group flex flex-col items-center lg:items-start text-center lg:text-left p-8 rounded-3xl bg-gradient-to-br from-slate-800/80 to-slate-900/50 border border-slate-700/50 hover:border-slate-600 transition-all duration-500 cursor-default h-full ${step.ring} ring-1 ring-transparent`}>
+                                        {/* Glow overlay */}
+                                        <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${step.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-                                        <div className="flex justify-between items-start mb-6 relative z-10">
-                                            <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-red-600 transition-all duration-300 shadow-lg shadow-black/20 group-hover:shadow-red-900/20">
-                                                <step.icon size={24} strokeWidth={1.5} />
+                                        {/* Step number + Icon row */}
+                                        <div className="relative z-10 flex flex-col items-center lg:items-start gap-4 mb-6 w-full">
+                                            {/* Floating number badge */}
+                                            <div className="self-center lg:self-end">
+                                                <span className="text-7xl font-black text-slate-700/20 group-hover:text-slate-600/30 transition-colors leading-none font-serif italic select-none">
+                                                    {step.number}
+                                                </span>
                                             </div>
-                                            <span className="text-4xl font-black text-slate-700/30 group-hover:text-slate-700/50 transition-colors font-serif italic">{step.number}</span>
+                                            {/* Icon */}
+                                            <div className={`w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 transition-all duration-300 ${step.iconColor} shadow-lg group-hover:shadow-xl group-hover:scale-105 group-hover:-translate-y-1`}>
+                                                <step.icon size={28} strokeWidth={1.5} />
+                                            </div>
                                         </div>
 
-                                        <h3 className="text-xl font-bold text-white mb-3 relative z-10 group-hover:text-red-100 transition-colors">{step.title}</h3>
-                                        <p className="text-sm text-slate-400 leading-relaxed relative z-10 group-hover:text-slate-300 transition-colors">{step.desc}</p>
+                                        {/* Text */}
+                                        <div className="relative z-10">
+                                            <h3 className="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-white transition-colors">{step.title}</h3>
+                                            <p className="text-sm text-slate-500 leading-relaxed group-hover:text-slate-400 transition-colors">{step.desc}</p>
+                                        </div>
                                     </div>
                                 </ScrollReveal>
                             ))}
                         </div>
                     </div>
+
+                    {/* CTA */}
+                    <ScrollReveal className="text-center mt-16">
+                        <button onClick={() => { setView('CATALOG'); window.scrollTo(0, 0); }} className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-full font-bold hover:bg-red-600 hover:text-white transition-all duration-300 shadow-lg hover:shadow-red-500/25 hover:shadow-2xl hover:-translate-y-0.5">
+                            <span>Mulai Sewa Sekarang</span>
+                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </ScrollReveal>
                 </div>
             </section>
+
 
             {/* Why Us - Refined Layout */}
             <section className="py-24 bg-white overflow-hidden">
@@ -359,7 +378,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                             <h2 className="text-4xl font-bold mb-4 tracking-tight">Sering Disewa Minggu Ini</h2>
                         </div>
                         <button
-                            onClick={() => setView('CATALOG')}
+                            onClick={() => { setView('CATALOG'); window.scrollTo(0, 0); }}
                             className="group flex items-center gap-2 text-white font-semibold hover:text-red-400 transition-colors"
                         >
                             Lihat Semua Katalog <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
