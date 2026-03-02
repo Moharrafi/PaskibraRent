@@ -53,11 +53,27 @@ app.use('/api/newsletter', require('./routes/newsletter'));
 // Test Database Connection
 app.get('/api/test-db', async (req, res) => {
     try {
+        console.log('Testing DB connection with host:', process.env.DB_HOST);
         const [rows] = await pool.query('SELECT NOW() as now');
-        res.json({ message: 'Database connected successfully', time: rows[0].now });
+        res.json({
+            message: 'Database connected successfully',
+            time: rows[0].now,
+            env: {
+                has_host: !!process.env.DB_HOST,
+                has_user: !!process.env.DB_USER,
+                has_pass: !!process.env.DB_PASSWORD,
+                db_name: process.env.DB_NAME
+            }
+        });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Database connection failed', details: err.message });
+        console.error('Database connection test failed:', err);
+        res.status(500).json({
+            error: 'Database connection failed',
+            message: err.message,
+            code: err.code,
+            errno: err.errno,
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack
+        });
     }
 });
 

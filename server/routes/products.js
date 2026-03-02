@@ -17,8 +17,8 @@ router.get('/', async (req, res) => {
         }));
         res.json(products);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch products' });
+        console.error('Fetch products error:', err);
+        res.status(500).json({ error: 'Failed to fetch products', message: err.message, code: err.code });
     }
 });
 

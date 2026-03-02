@@ -128,7 +128,7 @@ router.get('/availability', async (req, res) => {
         res.json(rows);
     } catch (err) {
         console.error('Error fetching availability:', err);
-        res.status(500).json({ message: 'Gagal mengambil data ketersediaan' });
+        res.status(500).json({ message: 'Gagal mengambil data ketersediaan', detail: err.message, code: err.code });
     }
 });
 
