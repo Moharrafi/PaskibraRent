@@ -55,8 +55,8 @@ export const apiService = {
     },
 
     // Bookings
-    getAllBookings: async (): Promise<any[]> => {
-        const response = await api.get('/bookings/all');
+    getAllBookings: async (page = 1, limit = 50): Promise<{ data: any[]; total: number; page: number; totalPages: number }> => {
+        const response = await api.get('/bookings/all', { params: { page, limit } });
         return response.data;
     },
 

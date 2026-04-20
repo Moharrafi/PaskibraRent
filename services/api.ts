@@ -53,6 +53,11 @@ export const authService = {
         localStorage.removeItem('user');
     },
 
+    resendVerification: async (email: string) => {
+        const response = await api.post('/auth/resend-verification', { email });
+        return response.data;
+    },
+
     getCurrentUser: async () => {
         try {
             const response = await api.get('/auth/me');
@@ -123,7 +128,12 @@ export const newsletterService = {
     subscribe: async (email: string) => {
         const response = await api.post('/newsletter', { email });
         return response.data;
-    }
+    },
+
+    unsubscribe: async (token: string) => {
+        const response = await api.get(`/newsletter/unsubscribe?token=${encodeURIComponent(token)}`);
+        return response.data;
+    },
 };
 
 export default api;

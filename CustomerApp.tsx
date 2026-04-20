@@ -5,7 +5,7 @@ import { APP_NAME, CONTACT_WA } from './constants';
 import { CartItem, Costume, ViewState, BookingDetails, User } from './types';
 import CartDrawer from './components/CartDrawer';
 import CostumeDetailModal from './components/CostumeDetailModal';
-import api, { authService, cartService, productService, galleryService } from './services/api';
+import api, { authService, cartService, productService, galleryService, newsletterService } from './services/api';
 import SizeGuideModal from './components/SizeGuideModal';
 import LoginModal from './components/LoginModal';
 import { UserProfileModal, RentalHistoryModal, ChangePasswordModal } from './components/UserMenuModals';
@@ -128,6 +128,23 @@ const CustomerApp: React.FC = () => {
       }
     };
     fetchAvailability();
+  }, []);
+
+  // Newsletter Unsubscribe Logic
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const unsubToken = params.get('unsubscribe_token');
+    if (unsubToken && !(window as any).hasUnsubRun) {
+      (window as any).hasUnsubRun = true;
+      newsletterService.unsubscribe(unsubToken)
+        .then(() => {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          alert('Anda telah berhasil berhenti berlangganan newsletter.');
+        })
+        .catch(() => {
+          alert('Link berhenti berlangganan tidak valid atau sudah digunakan.');
+        });
+    }
   }, []);
 
   // Email Verification Logic

@@ -15,6 +15,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isVerificationSent, setIsVerificationSent] = useState(false);
+    const [isUnverified, setIsUnverified] = useState(false);
+    const [resendLoading, setResendLoading] = useState(false);
+    const [resendMessage, setResendMessage] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -29,7 +32,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
         setError('');
 
         try {
-            // Determine which service to call based on view
             let userData;
             if (isLoginView) {
                 userData = await authService.login(formData.email, formData.password);
@@ -38,23 +40,34 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
                 setFormData({ name: '', email: '', password: '' });
             } else {
                 const response = await authService.register(formData.name, formData.email, formData.password);
-
-                // Check if it's legacy mode (no verification)
                 if (response.warning || response.message.includes('Legacy Mode')) {
                     setIsLoginView(true);
                     setError(response.message || 'Registrasi berhasil! Silakan login.');
                 } else {
-                    // Standard flow with email verification
                     setIsVerificationSent(true);
                 }
-
                 setFormData({ name: '', email: '', password: '' });
             }
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.');
+            const msg = err.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.';
+            setError(msg);
+            if (msg.includes('belum diverifikasi')) setIsUnverified(true);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleResendVerification = async () => {
+        setResendLoading(true);
+        setResendMessage('');
+        try {
+            const res = await authService.resendVerification(formData.email);
+            setResendMessage(res.message);
+        } catch {
+            setResendMessage('Gagal mengirim ulang. Coba lagi.');
+        } finally {
+            setResendLoading(false);
         }
     };
 
@@ -130,9 +143,27 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
 
                     <div className="p-8">
                         {error && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm flex items-center gap-2">
-                                <AlertCircle size={16} />
-                                {error}
+                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+                                <div className="flex items-center gap-2">
+                                    <AlertCircle size={16} className="shrink-0" />
+                                    {error}
+                                </div>
+                                {isUnverified && (
+                                    <div className="mt-2 pt-2 border-t border-red-200">
+                                        {resendMessage ? (
+                                            <p className="text-red-500 text-xs">{resendMessage}</p>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={handleResendVerification}
+                                                disabled={resendLoading}
+                                                className="text-xs font-bold text-red-700 hover:underline disabled:opacity-50"
+                                            >
+                                                {resendLoading ? 'Mengirim...' : 'Kirim ulang email verifikasi'}
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
                         <form onSubmit={handleSubmit} className="space-y-4">

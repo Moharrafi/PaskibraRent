@@ -133,6 +133,43 @@ router.post('/verify', async (req, res) => {
     }
 });
 
+// Resend Verification Email
+router.post('/resend-verification', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ message: 'Email diperlukan' });
+
+        const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (users.length === 0) {
+            // Return success to avoid exposing registered emails
+            return res.json({ message: 'Jika email terdaftar dan belum diverifikasi, link baru telah dikirim.' });
+        }
+
+        const user = users[0];
+        if (user.is_verified) {
+            return res.json({ message: 'Akun ini sudah terverifikasi. Silakan login.' });
+        }
+
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        await pool.query('UPDATE users SET verification_token = ? WHERE id = ?', [verificationToken, user.id]);
+
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+        const verificationLink = `${clientUrl}?verify_token=${verificationToken}`;
+
+        await transporter.sendMail({
+            from: `"KostumFadilyss Team" <${process.env.MAIL_USER}>`,
+            to: email,
+            subject: 'Verifikasi Akun KostumFadilyss - Link Baru',
+            html: getVerificationEmailTemplate(user.name, verificationLink, clientUrl),
+        });
+
+        res.json({ message: 'Link verifikasi baru telah dikirim ke email Anda.' });
+    } catch (err) {
+        console.error('Resend verification error:', err);
+        res.status(500).json({ message: 'Gagal mengirim ulang email verifikasi.' });
+    }
+});
+
 // Verify Token (Get User)
 // Add helpful message for GET request on login
 router.get('/login', (req, res) => {

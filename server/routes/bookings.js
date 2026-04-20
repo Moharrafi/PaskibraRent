@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const nodemailer = require('nodemailer');
 const { pool } = require('../db');
-const jwt = require('jsonwebtoken');
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const APP_NAME = "KostumFadilyss";
 
@@ -15,45 +14,50 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+async function resolveExpiredBookings(bookings) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expired = bookings.filter(b => b.status === 'Sedang Disewa' && new Date(b.return_date) < today);
+    if (expired.length > 0) {
+        const ids = expired.map(b => b.id);
+        await pool.query('UPDATE bookings SET status = ? WHERE id IN (?)', ['Selesai', ids]);
+        expired.forEach(b => { b.status = 'Selesai'; });
+    }
+}
+
+async function attachItems(bookings) {
+    if (bookings.length === 0) return bookings;
+
+    const ids = bookings.map(b => b.id);
+    const [allItems] = await pool.query(
+        'SELECT * FROM booking_items WHERE booking_id IN (?)',
+        [ids]
+    );
+
+    const itemMap = {};
+    allItems.forEach(item => {
+        if (!itemMap[item.booking_id]) itemMap[item.booking_id] = [];
+        itemMap[item.booking_id].push(item);
+    });
+
+    return bookings.map(b => ({ ...b, items: itemMap[b.id] || [] }));
+}
+
 // GET User Bookings
 router.get('/my-bookings', verifyToken, async (req, res) => {
     try {
         const userId = req.user.user.id;
 
-        // 1. Get Bookings
         const [bookings] = await pool.query(
             'SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC',
             [userId]
         );
 
-        // 2. Get Items for each booking
-        const bookingsWithItems = await Promise.all(bookings.map(async (booking) => {
-            const [items] = await pool.query(
-                'SELECT * FROM booking_items WHERE booking_id = ?',
-                [booking.id]
-            );
+        await resolveExpiredBookings(bookings);
+        const result = await attachItems(bookings);
 
-            // Check status logic: if returnDate < today and status is 'Sedang Disewa', make it 'Selesai'
-            // DB Date is usually YYYY-MM-DD.
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const returnDate = new Date(booking.return_date);
-
-            let status = booking.status;
-            if (status === 'Sedang Disewa' && returnDate < today) {
-                status = 'Selesai';
-                // Optionally update DB lazily
-                await pool.query('UPDATE bookings SET status = ? WHERE id = ?', ['Selesai', booking.id]);
-            }
-
-            return {
-                ...booking,
-                status,
-                items
-            };
-        }));
-
-        res.json(bookingsWithItems);
+        res.json(result);
     } catch (err) {
         console.error('Error fetching bookings:', err);
         res.status(500).json({ message: 'Gagal mengambil riwayat booking' });
@@ -63,39 +67,20 @@ router.get('/my-bookings', verifyToken, async (req, res) => {
 // GET All Bookings (Admin)
 router.get('/all', verifyAdmin, async (req, res) => {
     try {
-        // In a real app, check for admin role here: if (req.user.role !== 'admin') ...
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+        const offset = (page - 1) * limit;
 
-        // 1. Get All Bookings
+        const [[{ total }]] = await pool.query('SELECT COUNT(*) as total FROM bookings');
         const [bookings] = await pool.query(
-            'SELECT * FROM bookings ORDER BY created_at DESC'
+            'SELECT * FROM bookings ORDER BY created_at DESC LIMIT ? OFFSET ?',
+            [limit, offset]
         );
 
-        // 2. Get Items for each booking
-        const bookingsWithItems = await Promise.all(bookings.map(async (booking) => {
-            const [items] = await pool.query(
-                'SELECT * FROM booking_items WHERE booking_id = ?',
-                [booking.id]
-            );
+        await resolveExpiredBookings(bookings);
+        const result = await attachItems(bookings);
 
-            // Check status logic (same as my-bookings)
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const returnDate = new Date(booking.return_date);
-
-            let status = booking.status;
-            if (status === 'Sedang Disewa' && returnDate < today) {
-                status = 'Selesai';
-                await pool.query('UPDATE bookings SET status = ? WHERE id = ?', ['Selesai', booking.id]);
-            }
-
-            return {
-                ...booking,
-                status,
-                items
-            };
-        }));
-
-        res.json(bookingsWithItems);
+        res.json({ data: result, total, page, limit, totalPages: Math.ceil(total / limit) });
     } catch (err) {
         console.error('Error fetching all bookings:', err);
         res.status(500).json({ message: 'Gagal mengambil data booking' });
@@ -138,25 +123,7 @@ router.post('/', verifyToken, async (req, res) => {
         await connection.beginTransaction();
 
         const { name, institution, phone, email, pickupDate, returnDate, rentalDuration, totalPrice, items } = req.body;
-
-        // Auth check (Optional based on rules, but we need user_id)
-        const authHeader = req.headers['authorization'];
-        let userId = null;
-
-        if (authHeader) {
-            const token = authHeader.split(' ')[1];
-            try {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                userId = decoded.user.id;
-            } catch (e) {
-                console.warn('Invalid token for booking');
-            }
-        }
-
-        if (!userId) {
-            // If we require login for booking
-            return res.status(401).json({ message: 'Silakan login untuk melakukan pemesanan.' });
-        }
+        const userId = req.user.user.id;
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'Keranjang belanja kosong' });
@@ -286,7 +253,7 @@ router.post('/', verifyToken, async (req, res) => {
 
         const adminMailOptions = {
             from: `"System Notif" <${process.env.MAIL_USER}>`,
-            to: 'mohamadfadilah426@gmail.com                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ', // Admin fixed email mohamadfadilah426@gmail.com
+            to: process.env.ADMIN_EMAIL || 'mohamadfadilah426@gmail.com',
             subject: `[ADMIN] Booking Baru #${bookingId} - ${name}`,
             html: `
             <!DOCTYPE html>

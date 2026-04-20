@@ -20,8 +20,8 @@ const BookingView: React.FC<BookingViewProps> = ({ onShowToast }) => {
     const loadBookings = async () => {
         try {
             setLoading(true);
-            const data = await apiService.getAllBookings();
-            setBookings(data);
+            const result = await apiService.getAllBookings();
+            setBookings(result.data);
         } catch (error) {
             console.error("Failed to load bookings", error);
             onShowToast('Gagal memuat data booking', 'error');
