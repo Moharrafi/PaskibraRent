@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import { Plus, Check, Loader2, Eye, AlertCircle, CalendarClock, Lock } from 'lucide-react';
+
+const CATEGORY_LABELS: Record<string, string> = {
+  fullset: 'Full Set',
+  aksesoris: 'Aksesoris',
+  sepatu: 'Sepatu',
+};
+const getCategoryLabel = (cat: string) =>
+  CATEGORY_LABELS[cat] ?? cat.charAt(0).toUpperCase() + cat.slice(1);
 import { Costume } from '../types';
 
 interface CostumeCardProps {
@@ -44,11 +52,12 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
           alt={costume.name}
           className={`w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 ${isFullyBooked ? 'grayscale contrast-75' : ''}`}
           loading="lazy"
+          onError={(e) => { (e.target as HTMLImageElement).src = '/images/placeholder.jpg'; }}
         />
 
         {/* Category Badge */}
         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-slate-800 uppercase tracking-wide z-10">
-          {costume.category}
+          {getCategoryLabel(costume.category)}
         </div>
 
         {/* Low Stock Indicator (< 5 but > 0) - Hidden for Fullset */}

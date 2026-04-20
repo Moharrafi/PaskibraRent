@@ -83,11 +83,14 @@ const CustomerApp: React.FC = () => {
     };
   }, [isUserDropdownOpen]);
 
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
   // Fetch Products
   useEffect(() => {
-    productService.getProducts().then(data => {
-      setCostumes(data);
-    }).catch(console.error);
+    productService.getProducts()
+      .then(data => setCostumes(data))
+      .catch(console.error)
+      .finally(() => setIsLoadingProducts(false));
   }, []);
 
   // Check for logged-in user on mount
@@ -368,7 +371,10 @@ const CustomerApp: React.FC = () => {
     });
   }, [searchQuery, filterCategory, costumes]);
 
-  const categories = ['all', 'fullset', 'aksesoris'];
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(costumes.map(c => c.category)));
+    return ['all', ...cats];
+  }, [costumes]);
 
   const pageVariants = {
     initial: { opacity: 0 },
@@ -720,6 +726,7 @@ const CustomerApp: React.FC = () => {
                   setFilterCategory={setFilterCategory}
                   categories={categories}
                   filteredCostumes={filteredCostumes}
+                  isLoading={isLoadingProducts}
                   cart={cart}
                   addToCart={addToCart}
                   setSelectedCostume={setSelectedCostume}
