@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"node --watch server/index.js\"",
-    "build": "vite build",
+    "build": "vite build && cd admin && npm install && npm run build",
     "preview": "vite preview",
     "server": "node server/index.js",
     "verify-db": "node server/init-db.js"
