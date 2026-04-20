@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { ArrowUp, Menu, ShoppingBag, X, User as UserIcon, LogOut, LogIn, History, Lock, Loader2, ChevronDown, Instagram, Facebook, Youtube, ChevronRight, MapPin, Phone, Mail, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { APP_NAME, CONTACT_WA } from './constants';
@@ -401,6 +402,7 @@ const CustomerApp: React.FC = () => {
   ];
 
   return (
+    <>
     <HelmetProvider>
       <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-red-200 selection:text-red-900">
         <AnimatePresence>
@@ -968,6 +970,8 @@ const CustomerApp: React.FC = () => {
 
       </div>
     </HelmetProvider>
+    <Analytics />
+    </>
   );
 };
 
