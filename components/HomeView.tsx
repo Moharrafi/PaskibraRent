@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Youtube, Search, Calendar, Ruler, RotateCcw, ChevronRight, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Star, Quote, Shield, Sparkles, Scissors, Zap, Truck, Award, Check, MapPin, Phone, Mail, Instagram, Facebook, Youtube, Search, Calendar, Ruler, RotateCcw, ChevronRight, Clock, ChevronDown } from 'lucide-react';
 import { APP_NAME, CONTACT_WA } from '../constants';
 import { Costume, ViewState, CartItem } from '../types';
 import CostumeCard from './CostumeCard';
@@ -21,6 +21,81 @@ interface HomeViewProps {
     COSTUMES: Costume[];
     availabilityMap: Record<string, number>;
 }
+
+const FAQ_ITEMS = [
+    {
+        question: "Berapa biaya sewa kostum paskibra?",
+        answer: "Harga sewa mulai dari Rp 25.000 untuk aksesoris hingga Rp 1.900.000 untuk seragam full set premium. Harga sudah termasuk laundry dan durasi sewa 3 hari. Hubungi kami via WhatsApp untuk penawaran khusus paket pasukan."
+    },
+    {
+        question: "Bagaimana cara memesan kostum paskibra?",
+        answer: "Pemesanan bisa dilakukan langsung di website kami: pilih kostum → masukkan keranjang → isi form pemesanan → konfirmasi via WhatsApp. Kami akan memproses pesanan dan menghubungi Anda untuk konfirmasi ketersediaan dan pembayaran DP."
+    },
+    {
+        question: "Apakah ada layanan antar ke lokasi?",
+        answer: "Ya, kami melayani pengiriman ke area Bogor, Cileungsi, Cibubur, dan sekitarnya. Biaya pengiriman menyesuaikan jarak. Untuk acara besar, kami juga bisa hadir langsung untuk sesi fitting di lokasi Anda."
+    },
+    {
+        question: "Apakah kostum tersedia dalam semua ukuran?",
+        answer: "Koleksi kami tersedia dalam ukuran S, M, L, XL, hingga XXL untuk seragam full set. Untuk sepatu tersedia dari ukuran 37 hingga 44. Kami juga menerima request ukuran khusus untuk pasukan besar."
+    },
+    {
+        question: "Berapa lama durasi sewa minimal?",
+        answer: "Durasi sewa minimal adalah 3 hari. Maksimal 14 hari dalam satu periode peminjaman. Untuk kebutuhan jangka panjang seperti pelatihan rutin, silakan hubungi kami untuk paket khusus bulanan."
+    },
+    {
+        question: "Apakah kostum sudah dicuci sebelum dikirim?",
+        answer: "Ya, semua kostum telah melalui proses laundry hygienic steam sebelum dikirim ke penyewa berikutnya. Kami menjamin kostum yang Anda terima bersih, wangi, dan siap pakai."
+    },
+    {
+        question: "Apa yang terjadi jika kostum rusak atau hilang?",
+        answer: "Penyewa bertanggung jawab atas kerusakan atau kehilangan selama masa sewa. Biaya perbaikan atau penggantian akan disesuaikan dengan tingkat kerusakan. Kami sarankan untuk merawat kostum dengan baik selama pemakaian."
+    },
+];
+
+const FAQSection: React.FC = () => {
+    const [openIdx, setOpenIdx] = useState<number | null>(null);
+    return (
+        <section className="py-24 bg-slate-50 border-t border-slate-100">
+            <div className="container mx-auto px-4 max-w-3xl">
+                <ScrollReveal className="text-center mb-14">
+                    <span className="text-red-600 font-bold tracking-widest text-xs uppercase mb-3 block">FAQ</span>
+                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Pertanyaan yang Sering Diajukan</h2>
+                </ScrollReveal>
+                <div className="space-y-3">
+                    {FAQ_ITEMS.map((item, idx) => (
+                        <div key={idx} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                            <button
+                                className="w-full flex items-center justify-between gap-4 p-6 text-left hover:bg-slate-50 transition-colors"
+                                onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
+                            >
+                                <span className="font-semibold text-slate-800 text-base">{item.question}</span>
+                                <ChevronDown
+                                    size={20}
+                                    className={`shrink-0 text-slate-400 transition-transform duration-300 ${openIdx === idx ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+                            <AnimatePresence initial={false}>
+                                {openIdx === idx && (
+                                    <motion.div
+                                        key="answer"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.25 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <p className="px-6 pb-6 text-slate-500 leading-relaxed text-sm">{item.answer}</p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
 
 const HomeView: React.FC<HomeViewProps> = ({
     setView,
@@ -46,6 +121,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                 title="Sewa Kostum & Seragam Paskibra Terlengkap"
                 description="Jasa sewa kostum Paskibra (Pasukan Pengibar Bendera) dengan koleksi terlengkap, bahan premium, dan ukuran presisi. Melayani sewa harian untuk lomba dan upacara di Jakarta & Bogor."
                 keywords="sewa kostum paskibra, seragam paskibra, baju paskibra, sewa baju paskibra jakarta, perlengkapan paskibra"
+                faqItems={FAQ_ITEMS}
             />
             {/* HERO SECTION: High-End Editorial Style */}
             <section className="relative min-h-[92vh] flex items-center bg-slate-900 overflow-hidden">
@@ -400,6 +476,9 @@ const HomeView: React.FC<HomeViewProps> = ({
                     </div>
                 </div>
             </section>
+
+            {/* FAQ SECTION */}
+            <FAQSection />
 
             {/* NEW SECTION: Location/Maps */}
             <section className="py-24 bg-white border-t border-slate-100">

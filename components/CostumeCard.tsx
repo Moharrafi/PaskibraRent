@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Check, Loader2, Eye, AlertCircle, CalendarClock, Lock } from 'lucide-react';
+import { Plus, Check, Loader2, Eye, AlertCircle, CalendarClock, Lock, Share2 } from 'lucide-react';
+import { APP_URL } from '../constants';
 
 const CATEGORY_LABELS: Record<string, string> = {
   fullset: 'Full Set',
@@ -41,6 +42,13 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
     if (onViewDetail) onViewDetail(costume);
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const text = `Lihat kostum *${costume.name}* di KostumFadilyss!\nHarga sewa: Rp ${costume.price.toLocaleString('id-ID')} / ${costume.rentalDuration} hari\n\n${APP_URL}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank');
+  };
+
   return (
     <div
       onClick={() => onViewDetail && onViewDetail(costume)}
@@ -59,6 +67,15 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-slate-800 uppercase tracking-wide z-10">
           {getCategoryLabel(costume.category)}
         </div>
+
+        {/* Share Button */}
+        <button
+          onClick={handleShare}
+          title="Bagikan via WhatsApp"
+          className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm p-1.5 rounded-lg text-slate-500 hover:text-green-600 hover:bg-white transition-all opacity-0 group-hover:opacity-100 z-10 shadow-sm"
+        >
+          <Share2 size={14} />
+        </button>
 
         {/* Low Stock Indicator (< 5 but > 0) - Hidden for Fullset */}
         {!isFullyBooked && effectiveStock < 5 && costume.category !== 'fullset' && (
