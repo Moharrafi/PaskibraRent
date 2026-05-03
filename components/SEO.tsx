@@ -7,6 +7,11 @@ interface FAQItem {
     answer: string;
 }
 
+interface BreadcrumbItem {
+    name: string;
+    url: string;
+}
+
 interface SEOProps {
     title: string;
     description?: string;
@@ -15,6 +20,7 @@ interface SEOProps {
     url?: string;
     type?: string;
     faqItems?: FAQItem[];
+    breadcrumbs?: BreadcrumbItem[];
     product?: {
         name: string;
         price: number;
@@ -28,10 +34,11 @@ const SEO: React.FC<SEOProps> = ({
     title,
     description = APP_DESCRIPTION,
     keywords = "sewa kostum paskibra, sewa baju paskibra, kostum paskibra jakarta, kostum paskibra bogor, sewa seragam paskibra, kostum paskibra cileungsi, kostum paskibra cibubur, sewa baju adat bogor, sewa kostum karnaval, atribut paskibra lengkap, sewa jas formal, kostum tari tradisional, sewa baju pdu paskibra, sewa baju pdh paskibra",
-    image = "/images/logo.png",
+    image = "/images/og-banner.png",
     url = APP_URL,
     type = "website",
     faqItems,
+    breadcrumbs,
     product,
 }) => {
     const siteTitle = `${title} | ${APP_NAME}`;
@@ -75,7 +82,45 @@ const SEO: React.FC<SEOProps> = ({
             }
         ],
         "sameAs": [
-            "https://www.instagram.com/kostumfadilyss",
+            "https://www.instagram.com/kostume_fadilyss/",
+        ]
+    };
+
+    // WebSite schema — enables Google sitelinks search box
+    const webSiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": APP_NAME,
+        "url": APP_URL,
+        "description": APP_DESCRIPTION,
+        "inLanguage": "id-ID",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": `${APP_URL}/catalog?q={search_term_string}`
+            },
+            "query-input": "required name=search_term_string"
+        }
+    };
+
+    // Organization schema — strengthens brand identity in Google Knowledge Panel
+    const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": APP_NAME,
+        "url": APP_URL,
+        "logo": `${APP_URL}/images/logo.png`,
+        "description": APP_DESCRIPTION,
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+62895428282092",
+            "contactType": "customer service",
+            "areaServed": "ID",
+            "availableLanguage": "Indonesian"
+        },
+        "sameAs": [
+            "https://www.instagram.com/kostume_fadilyss/"
         ]
     };
 
@@ -89,6 +134,18 @@ const SEO: React.FC<SEOProps> = ({
                 "@type": "Answer",
                 "text": item.answer
             }
+        }))
+    } : null;
+
+    // BreadcrumbList schema
+    const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((item, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "name": item.name,
+            "item": item.url.startsWith('http') ? item.url : `${APP_URL}${item.url}`
         }))
     } : null;
 
@@ -143,10 +200,14 @@ const SEO: React.FC<SEOProps> = ({
 
             {/* Structured Data */}
             <script type="application/ld+json">{JSON.stringify(localBusinessSchema)}</script>
+            <script type="application/ld+json">{JSON.stringify(webSiteSchema)}</script>
+            <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
             {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
+            {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             {productSchema && <script type="application/ld+json">{JSON.stringify(productSchema)}</script>}
         </Helmet>
     );
 };
 
 export default SEO;
+

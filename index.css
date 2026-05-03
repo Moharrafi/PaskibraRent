@@ -55,3 +55,35 @@ html {
     animation: fadeIn 0.3s ease-out;
     will-change: opacity;
 }
+
+/* Shimmer animation for promo banner */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Bounce short for cart badge */
+@keyframes bounceShort {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.animate-bounce-short {
+    animation: bounceShort 1s ease-in-out infinite;
+}

@@ -120,16 +120,19 @@ const HomeView: React.FC<HomeViewProps> = ({
             <SEO
                 title="Sewa Kostum & Seragam Paskibra Terlengkap"
                 description="Jasa sewa kostum Paskibra (Pasukan Pengibar Bendera) dengan koleksi terlengkap, bahan premium, dan ukuran presisi. Melayani sewa harian untuk lomba dan upacara di Jakarta & Bogor."
-                keywords="sewa kostum paskibra, seragam paskibra, baju paskibra, sewa baju paskibra jakarta, perlengkapan paskibra"
+                keywords="sewa kostum paskibra, seragam paskibra, baju paskibra, sewa baju paskibra jakarta, perlengkapan paskibra, sewa kostum paskibra cileungsi, sewa seragam paskibra bogor"
                 faqItems={FAQ_ITEMS}
+                breadcrumbs={[
+                    { name: 'Beranda', url: '/' },
+                ]}
             />
             {/* HERO SECTION: High-End Editorial Style */}
             <section className="relative min-h-[92vh] flex items-center bg-slate-900 overflow-hidden">
                 {/* Background Image with Elegant Gradient Overlay */}
                 <div className="absolute inset-0">
-                    <img
+                        <img
                         src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
-                        alt="Hero Background"
+                        alt="Pasukan Paskibra mengenakan seragam PDU premium dari KostumFadilyss di Cileungsi Bogor"
                         className="w-full h-full object-cover object-center"
                         width="1920"
                         height="1080"
@@ -155,6 +158,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                             </div>
 
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.9] tracking-tight mb-8">
+                                <span className="sr-only">Sewa Kostum Paskibra Terlengkap di Cileungsi Bogor - KostumFadilyss: </span>
                                 TEGAS.<br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-slate-400 to-slate-600">WIBAWA.</span><br />
                                 <span className="text-red-600">SEMPURNA.</span>
@@ -181,15 +185,24 @@ const HomeView: React.FC<HomeViewProps> = ({
                                 </button>
                             </div>
 
-                            {/* Trust Indicators */}
-                            <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                                <div className="flex items-center gap-2">
-                                    <Shield size={20} className="text-slate-300" />
-                                    <span className="text-sm text-slate-400">Garansi Kualitas</span>
+                            {/* Social Proof Stats */}
+                            <div className="mt-12 flex items-center justify-center lg:justify-start gap-6 md:gap-8">
+                                <div className="text-center lg:text-left">
+                                    <p className="text-2xl md:text-3xl font-bold text-white">100<span className="text-red-500">+</span></p>
+                                    <p className="text-[11px] text-slate-400 font-medium tracking-wide">Instansi Percaya</p>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock size={20} className="text-slate-300" />
-                                    <span className="text-sm text-slate-400">Tersedia 24/7</span>
+                                <div className="w-px h-10 bg-slate-700" />
+                                <div className="text-center lg:text-left">
+                                    <p className="text-2xl md:text-3xl font-bold text-white">500<span className="text-red-500">+</span></p>
+                                    <p className="text-[11px] text-slate-400 font-medium tracking-wide">Kostum Tersedia</p>
+                                </div>
+                                <div className="w-px h-10 bg-slate-700" />
+                                <div className="text-center lg:text-left">
+                                    <div className="flex items-center gap-1 justify-center lg:justify-start">
+                                        <Star size={18} className="text-yellow-400 fill-yellow-400" />
+                                        <p className="text-2xl md:text-3xl font-bold text-white">4.9</p>
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 font-medium tracking-wide">Rating Pelanggan</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -235,9 +248,9 @@ const HomeView: React.FC<HomeViewProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         {[
-                            { title: 'KOPASKA', img: '/images/1.jpeg', cat: 'fullset' },
-                            { title: 'ARJUNA', img: '/images/qq.jpeg', cat: 'fullset' },
-                            { title: 'SHERIF', img: '/images/tt.jpeg', cat: 'fullset' }
+                            { title: 'KOPASKA', img: '/images/1.jpeg', cat: 'fullset', alt: 'Sewa kostum Paskibra model Kopaska full set premium' },
+                            { title: 'ARJUNA', img: '/images/qq.jpeg', cat: 'fullset', alt: 'Sewa seragam Paskibra model Arjuna elegan untuk pasukan' },
+                            { title: 'SHERIF', img: '/images/tt.jpeg', cat: 'fullset', alt: 'Sewa kostum Paskibra model Sherif lengkap dengan atribut' }
                         ].map((item, idx) => (
                             <motion.div
                                 key={idx}
@@ -248,7 +261,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                                 className="group relative h-[400px] md:h-[500px] rounded-[2.5rem] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500"
                                 onClick={() => { setFilterCategory(item.cat); setView('CATALOG'); window.scrollTo(0, 0); }}
                             >
-                                <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
+                                <img src={item.img} alt={item.alt} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
 
                                 <div className="absolute bottom-0 left-0 p-8 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
@@ -376,7 +389,7 @@ const HomeView: React.FC<HomeViewProps> = ({
                                     width="800"
                                     height="600"
                                     src="/images/WhatsApp Image 2026-02-06 at 13.14.12.jpeg"
-                                    alt="Detail Seragam"
+                                    alt="Detail jahitan seragam Paskibra bahan drill premium dari KostumFadilyss"
                                     className="w-full h-[600px] object-cover aspect-[4/3]"
                                     loading="lazy"
                                 />

@@ -71,6 +71,10 @@ const CatalogView: React.FC<CatalogViewProps> = ({
                 title="Katalog Kostum Paskibra - Sewa Seragam & Aksesoris"
                 description="Lihat katalog lengkap kostum Paskibra, seragam PDU, atribut, dan aksesoris lainnya. Tersedia berbagai ukuran dan model terbaru untuk kebutuhan pasukan Anda."
                 url="/catalog"
+                breadcrumbs={[
+                    { name: 'Beranda', url: '/' },
+                    { name: 'Katalog', url: '/catalog' },
+                ]}
             />
             <div className="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm/50 backdrop-blur-md bg-white/90">
                 <div className="container mx-auto px-4 py-4 space-y-4 md:space-y-0 md:flex items-center justify-between gap-4">

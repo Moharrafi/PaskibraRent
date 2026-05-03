@@ -54,8 +54,12 @@ const GalleryPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50">
       <SEO
         title="Galeri Pasukan & Event - KostumFadilyss"
-        description="Dokumentasi foto pasukan Paskibra yang menggunakan kostum dan seragam dari kami."
+        description="Dokumentasi foto pasukan Paskibra yang menggunakan kostum dan seragam dari kami. Lihat penampilan terbaik pasukan dari berbagai sekolah dan instansi."
         url="/gallery"
+        breadcrumbs={[
+            { name: 'Beranda', url: '/' },
+            { name: 'Galeri', url: '/gallery' },
+        ]}
       />
 
       {/* Header */}

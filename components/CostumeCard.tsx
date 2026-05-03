@@ -44,9 +44,21 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const text = `Lihat kostum *${costume.name}* di KostumFadilyss!\nHarga sewa: Rp ${costume.price.toLocaleString('id-ID')} / ${costume.rentalDuration} hari\n\n${APP_URL}`;
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(waUrl, '_blank');
+    const text = `🎖️ *${costume.name}*\n💰 Sewa mulai Rp ${costume.price.toLocaleString('id-ID')} / ${costume.rentalDuration} hari\n✅ Bahan: ${costume.material}\n📦 Termasuk: ${(costume.includedItems || []).slice(0, 3).join(', ')}${(costume.includedItems || []).length > 3 ? '...' : ''}\n\n🔗 Lihat selengkapnya di:\n${APP_URL}/catalog\n\nPesan sekarang via WhatsApp! 👇`;
+    
+    // Try Web Share API first (native share on mobile)
+    if (navigator.share) {
+      navigator.share({
+        title: `${costume.name} - KostumFadilyss`,
+        text: `Sewa ${costume.name} mulai Rp ${costume.price.toLocaleString('id-ID')}`,
+        url: `${APP_URL}/catalog`,
+      }).catch(() => {
+        // Fallback to WhatsApp
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      });
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
   };
 
   return (
@@ -68,11 +80,11 @@ const CostumeCard: React.FC<CostumeCardProps> = ({ costume, onAddToCart, isInCar
           {getCategoryLabel(costume.category)}
         </div>
 
-        {/* Share Button */}
+        {/* Share Button — always visible on mobile, hover-reveal on desktop */}
         <button
           onClick={handleShare}
-          title="Bagikan via WhatsApp"
-          className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm p-1.5 rounded-lg text-slate-500 hover:text-green-600 hover:bg-white transition-all opacity-0 group-hover:opacity-100 z-10 shadow-sm"
+          title="Bagikan"
+          className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm p-1.5 rounded-lg text-slate-500 hover:text-green-600 hover:bg-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 shadow-sm"
         >
           <Share2 size={14} />
         </button>
